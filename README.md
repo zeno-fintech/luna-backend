@@ -110,6 +110,12 @@ luna-backend/
 ### Health Check
 - `GET /health` - Health check del servidor
 
+### 📚 Documentación API (Swagger)
+- `GET /api-docs` - Documentación interactiva de la API (Swagger UI)
+- `GET /api-docs.json` - Especificación OpenAPI en formato JSON
+
+**Acceso:** Abre `http://localhost:3001/api-docs` en tu navegador para ver la documentación interactiva completa.
+
 ## 🔐 Environment Variables
 
 Ver `.env.example` para todas las variables de entorno requeridas.

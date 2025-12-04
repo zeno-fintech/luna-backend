@@ -38,15 +38,32 @@ const currencyRoutes = require('@level3/routes/currencies');
 const countryRoutes = require('@level3/routes/countries');
 
 const errorHandler = require('@core/middleware/errorHandler');
+const { swaggerSetup } = require('./config/swagger');
 
 const app = express();
 
 // Security Middleware
 app.use(helmet());
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3001',
+
+// CORS Configuration - Soporta múltiples orígenes separados por coma
+const corsOptions = {
+  origin: (origin, callback) => {
+    const allowedOrigins = process.env.CORS_ORIGIN 
+      ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
+      : ['http://localhost:3001'];
+    
+    // Permitir requests sin origin (Postman, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
-}));
+};
+app.use(cors(corsOptions));
 
 // Rate Limiting
 const limiter = rateLimit({
@@ -60,7 +77,19 @@ app.use('/api/', limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health Check Route
+// Swagger Documentation (antes de las rutas)
+swaggerSetup(app);
+
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     summary: Health check del servidor
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: Servidor funcionando correctamente
+ */
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
@@ -70,11 +99,21 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API Routes
+/**
+ * @swagger
+ * /api/v1:
+ *   get:
+ *     summary: Información de la API y endpoints disponibles
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: Lista de endpoints disponibles
+ */
 app.get('/api/v1', (req, res) => {
   res.json({
     message: 'LUNA API v1',
     version: '1.0.0',
+    documentation: '/api-docs',
     endpoints: {
       health: '/health',
       // Level 1 - Admin
