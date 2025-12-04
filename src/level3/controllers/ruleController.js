@@ -169,17 +169,17 @@ exports.createRule = asyncHandler(async (req, res, next) => {
 
   // Verificar si el total suma 100% después de crear
   const allRules = await Rule.find({ tableroID });
-  const totalPorcentaje = allRules.reduce((sum, r) => sum + r.porcentaje, 0);
-  const isValid = totalPorcentaje === 100 && allRules.length >= 2 && allRules.length <= 4;
+  const finalTotalPorcentaje = allRules.reduce((sum, r) => sum + r.porcentaje, 0);
+  const isValid = finalTotalPorcentaje === 100 && allRules.length >= 2 && allRules.length <= 4;
 
   res.status(201).json({
     success: true,
     data: rule,
-    totalPorcentaje,
+    totalPorcentaje: finalTotalPorcentaje,
     isValid,
     message: isValid 
       ? 'Regla creada correctamente' 
-      : `Regla creada. Advertencia: El total actual es ${totalPorcentaje}%. Debe sumar exactamente 100%.`
+      : `Regla creada. Advertencia: El total actual es ${finalTotalPorcentaje}%. Debe sumar exactamente 100%.`
   });
 });
 
@@ -235,17 +235,17 @@ exports.updateRule = asyncHandler(async (req, res, next) => {
 
   // Verificar si el total suma 100% después de actualizar
   const allRules = await Rule.find({ tableroID: rule.tableroID });
-  const totalPorcentaje = allRules.reduce((sum, r) => sum + r.porcentaje, 0);
-  const isValid = totalPorcentaje === 100 && allRules.length >= 2 && allRules.length <= 4;
+  const finalTotalPorcentaje = allRules.reduce((sum, r) => sum + r.porcentaje, 0);
+  const isValid = finalTotalPorcentaje === 100 && allRules.length >= 2 && allRules.length <= 4;
 
   res.status(200).json({
     success: true,
     data: rule,
-    totalPorcentaje,
+    totalPorcentaje: finalTotalPorcentaje,
     isValid,
     message: isValid 
       ? 'Regla actualizada correctamente' 
-      : `Regla actualizada. Advertencia: El total actual es ${totalPorcentaje}%. Debe sumar exactamente 100%.`
+      : `Regla actualizada. Advertencia: El total actual es ${finalTotalPorcentaje}%. Debe sumar exactamente 100%.`
   });
 });
 
