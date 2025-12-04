@@ -20,6 +20,7 @@
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "commit": "node scripts/commit.js",
+    "generate:jwt-secret": "node scripts/generateJWTSecret.js",
     "script:assign-users": "node scripts/assignUsersToDefaultTenant.js",
     "script:calculate-metrics": "node scripts/calculateMetricsSnapshot.js"
   },

@@ -221,7 +221,7 @@ app.use((req, res) => {
 });
 
 // Start Server
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3001; // Railway asigna el puerto automáticamente
 
 // Connect to MongoDB and start server
 const startServer = async () => {
