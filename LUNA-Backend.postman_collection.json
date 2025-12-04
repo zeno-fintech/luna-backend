@@ -1,0 +1,1279 @@
+{
+	"info": {
+		"_postman_id": "luna-backend-api",
+		"name": "LUNA Backend API",
+		"description": "Colección completa de endpoints para LUNA Backend API - Plataforma de educación financiera multi-tenant\n\n## 👤 Usuarios Creados:\n\n### SUPERADMIN (Nivel 1)\n- Email: dev.francoscm@gmail.com\n- Password: #Luna2025\n- Rol: SUPERADMIN\n- Tenant: Luna\n\n### Usuario Final (Nivel 3)\n- Email: francocastro204@gmail.com\n- Password: #Luna2025\n- Rol: USER\n- Tenant: Luna\n\n## 🏢 Tenant Creado:\n- Nombre: Luna\n- ID: 692be135e305e83804815fea\n- Slug: luna\n- Tipo: own_brand\n\n## 🚀 Instrucciones:\n1. Importa esta colección en Postman\n2. Configura la variable `base_url` como `http://localhost:3001`\n3. Ejecuta primero \"Login Usuario Final\" o \"Login SUPERADMIN\" para obtener tokens\n4. Los tokens se guardan automáticamente en las variables `auth_token` y `admin_token`\n5. Ya puedes probar todos los demás endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						}
+					}
+				},
+				{
+					"name": "API Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 3 - Auth (Usuario Final)",
+			"item": [
+				{
+					"name": "Login Usuario Final",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.token) {",
+									"        pm.collectionVariables.set('auth_token', response.data.token);",
+									"        pm.collectionVariables.set('user_id', response.data.user.id);",
+									"        console.log('Token guardado para usuario final:', response.data.token.substring(0, 20) + '...');",
+									"    } else {",
+									"        console.log('Error: No se encontró token en la respuesta');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"correo\": \"francocastro204@gmail.com\",\n  \"password\": \"#Luna2025\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "login"]
+						},
+						"description": "Login con usuario final creado: francocastro204@gmail.com / #Luna2025"
+					}
+				},
+				{
+					"name": "Login SUPERADMIN",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.token) {",
+									"        pm.collectionVariables.set('admin_token', response.data.token);",
+									"        pm.collectionVariables.set('tenant_token', response.data.token);",
+									"        console.log('Token guardado para SUPERADMIN:', response.data.token.substring(0, 20) + '...');",
+									"    } else {",
+									"        console.log('Error: No se encontró token en la respuesta');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"correo\": \"dev.francoscm@gmail.com\",\n  \"password\": \"#Luna2025\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "login"]
+						},
+						"description": "Login con SUPERADMIN: dev.francoscm@gmail.com / #Luna2025"
+					}
+				},
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.token) {",
+									"        pm.collectionVariables.set('auth_token', response.data.token);",
+									"        console.log('Token guardado desde register');",
+									"    } else if (response.token) {",
+									"        pm.collectionVariables.set('auth_token', response.token);",
+									"        console.log('Token guardado desde register (formato antiguo)');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombres\": \"Juan\",\n  \"apellidos\": \"Pérez\",\n  \"correo\": \"juan.perez@example.com\",\n  \"password\": \"password123\",\n  \"telefono\": \"+56912345678\",\n  \"tenantId\": \"692be135e305e83804815fea\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.token) {",
+									"        pm.collectionVariables.set('auth_token', response.data.token);",
+									"        console.log('Token guardado desde login');",
+									"    } else if (response.token) {",
+									"        pm.collectionVariables.set('auth_token', response.token);",
+									"        console.log('Token guardado desde login (formato antiguo)');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"correo\": \"francocastro204@gmail.com\",\n  \"password\": \"#Luna2025\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Get Me",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "me"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 3 - Transactions",
+			"item": [
+				{
+					"name": "Get All Transactions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "transactions"]
+						}
+					}
+				},
+				{
+					"name": "Create Transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tipo\": \"gasto\",\n  \"monto\": 50000,\n  \"descripcion\": \"Compra en supermercado\",\n  \"fecha\": \"2024-01-15\",\n  \"categoria\": \"Alimentación\",\n  \"accountId\": \"{{account_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "transactions"]
+						}
+					}
+				},
+				{
+					"name": "Get Transaction by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "transactions", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{transaction_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Transaction",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"monto\": 55000,\n  \"descripcion\": \"Compra actualizada en supermercado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "transactions", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{transaction_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Transaction",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "transactions", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{transaction_id}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 3 - Profiles",
+			"item": [
+				{
+					"name": "Get All Profiles",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/profiles",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "profiles"]
+						}
+					}
+				},
+				{
+					"name": "Create Profile",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Perfil Personal\",\n  \"tipo\": \"personal\",\n  \"moneda\": \"CLP\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/profiles",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "profiles"]
+						}
+					}
+				},
+				{
+					"name": "Get Profile by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/profiles/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "profiles", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{profile_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Perfil Personal Actualizado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/profiles/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "profiles", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{profile_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Profile",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/profiles/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "profiles", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{profile_id}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 3 - Accounts",
+			"item": [
+				{
+					"name": "Get All Accounts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "accounts"]
+						}
+					}
+				},
+				{
+					"name": "Create Account",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Cuenta Corriente\",\n  \"tipo\": \"corriente\",\n  \"banco\": \"Banco de Chile\",\n  \"numero\": \"1234567890\",\n  \"saldoInicial\": 1000000,\n  \"moneda\": \"CLP\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "accounts"]
+						}
+					}
+				},
+				{
+					"name": "Get Account by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "accounts", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{account_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Account",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"saldoInicial\": 1500000\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "accounts", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{account_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Account",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "accounts", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{account_id}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 3 - Analytics",
+			"item": [
+				{
+					"name": "Get Financial Summary",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/analytics/summary",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "analytics", "summary"]
+						}
+					}
+				},
+				{
+					"name": "Get Monthly Trends",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/analytics/trends",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "analytics", "trends"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 3 - App",
+			"item": [
+				{
+					"name": "Get Summary",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/app/summary",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "app", "summary"]
+						}
+					}
+				},
+				{
+					"name": "Get Net Worth",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/app/net-worth",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "app", "net-worth"]
+						}
+					}
+				},
+				{
+					"name": "Get Financial Score",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/app/financial-score",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "app", "financial-score"]
+						}
+					}
+				},
+				{
+					"name": "Get User Insights",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/app/insights",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "app", "insights"]
+						}
+					}
+				},
+				{
+					"name": "Get Spending Insights",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/app/insights/spending",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "app", "insights", "spending"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 1 - Admin Tenants",
+			"item": [
+				{
+					"name": "Get All Tenants",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/tenants",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "tenants"]
+						}
+					}
+				},
+				{
+					"name": "Create Tenant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"LUNA Finance\",\n  \"slug\": \"luna-finance\",\n  \"type\": \"own_brand\",\n  \"branding\": {\n    \"primaryColor\": \"#0066CC\",\n    \"domain\": \"app.lunafinance.com\"\n  },\n  \"defaultCurrency\": \"CLP\",\n  \"defaultCountry\": \"CL\",\n  \"config\": {\n    \"features\": {\n      \"ocrEnabled\": true,\n      \"aiInsightsEnabled\": true\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/tenants",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "tenants"]
+						}
+					}
+				},
+				{
+					"name": "Get Tenant by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/tenants/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "tenants", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{tenant_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Tenant",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"branding\": {\n    \"primaryColor\": \"#0066FF\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/tenants/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "tenants", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{tenant_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Tenant",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/tenants/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "tenants", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{tenant_id}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 1 - Admin",
+			"item": [
+				{
+					"name": "Get Global Overview",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/overview",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "overview"]
+						}
+					}
+				},
+				{
+					"name": "Get Tenant Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/tenants/:id/details",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "tenants", ":id", "details"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{tenant_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Calculate Metrics Snapshot",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/metrics/calculate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "metrics", "calculate"]
+						}
+					}
+				},
+				{
+					"name": "Get Metrics Snapshots",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/metrics/snapshots",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "metrics", "snapshots"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 2 - Tenant Companies",
+			"item": [
+				{
+					"name": "Get All Companies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tenant_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenant/companies",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenant", "companies"]
+						}
+					}
+				},
+				{
+					"name": "Create Company",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tenant_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Empresa Cliente Ejemplo\",\n  \"industry\": \"Retail\",\n  \"country\": \"CL\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenant/companies",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenant", "companies"]
+						}
+					}
+				},
+				{
+					"name": "Get Company by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tenant_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenant/companies/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenant", "companies", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{company_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Company",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tenant_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Empresa Cliente Actualizada\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenant/companies/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenant", "companies", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{company_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Company",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tenant_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenant/companies/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenant", "companies", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{company_id}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 2 - Tenant Dashboard",
+			"item": [
+				{
+					"name": "Get Tenant Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tenant_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenant/dashboard",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenant", "dashboard"]
+						}
+					}
+				},
+				{
+					"name": "Get Company Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tenant_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenant/dashboard/companies/:id/dashboard",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenant", "dashboard", "companies", ":id", "dashboard"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{company_id}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 3 - Countries & Currencies (Públicos)",
+			"item": [
+				{
+					"name": "Get Countries",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/countries",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "countries"]
+						},
+						"description": "Obtiene todos los países activos. Endpoint público (no requiere autenticación)."
+					}
+				},
+				{
+					"name": "Get Country by Code",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/countries/CL",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "countries", "CL"]
+						},
+						"description": "Obtiene un país específico por su código (CL, US, CO, etc.). Endpoint público."
+					}
+				},
+				{
+					"name": "Get Countries by Region",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/countries?region=Sudamérica",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "countries"],
+							"query": [
+								{
+									"key": "region",
+									"value": "Sudamérica",
+									"description": "Filtrar por región: Norteamérica, Centroamérica, Sudamérica, Caribe"
+								}
+							]
+						},
+						"description": "Obtiene países activos filtrados por región. Endpoint público."
+					}
+				},
+				{
+					"name": "Get Currencies",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/currencies",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "currencies"]
+						},
+						"description": "Obtiene todas las monedas activas con sus formatos. Endpoint público (no requiere autenticación)."
+					}
+				},
+				{
+					"name": "Get Currency by Code",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/currencies/CLP",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "currencies", "CLP"]
+						},
+						"description": "Obtiene una moneda específica por su código (CLP, USD, etc.) con su formato. Endpoint público."
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3001",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tenant_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "default_tenant_id",
+			"value": "692be135e305e83804815fea",
+			"type": "string",
+			"description": "ID del Tenant 'Luna' creado"
+		},
+		{
+			"key": "tenant_id",
+			"value": "692be135e305e83804815fea",
+			"type": "string",
+			"description": "ID del Tenant 'Luna'"
+		},
+		{
+			"key": "superadmin_email",
+			"value": "dev.francoscm@gmail.com",
+			"type": "string",
+			"description": "Email del usuario SUPERADMIN"
+		},
+		{
+			"key": "user_email",
+			"value": "francocastro204@gmail.com",
+			"type": "string",
+			"description": "Email del usuario final"
+		},
+		{
+			"key": "password",
+			"value": "#Luna2025",
+			"type": "string",
+			"description": "Password para ambos usuarios"
+		},
+		{
+			"key": "company_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "profile_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "account_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "transaction_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+
