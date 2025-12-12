@@ -53,26 +53,51 @@ router.use(authorize('USER'));
  *           schema:
  *             type: object
  *             required:
- *               - nombres
+ *               - nombrePerfil
  *               - tipo
  *             properties:
- *               nombres:
+ *               nombrePerfil:
  *                 type: string
+ *                 description: Nombre del perfil (también acepta 'nombre' como alias)
  *                 example: Franco
- *               apellidos:
+ *               nombre:
  *                 type: string
- *                 example: Castro
+ *                 description: Alias de nombrePerfil (se mapea automáticamente)
+ *                 example: Franco
  *               tipo:
  *                 type: string
  *                 enum: [persona, empresa]
+ *                 description: Tipo de perfil. Acepta 'persona', 'empresa', 'Personal' o 'Empresa' (se normaliza automáticamente)
  *                 example: persona
- *               correo:
+ *               moneda:
  *                 type: string
- *                 format: email
- *                 example: franco@example.com
- *               telefono:
- *                 type: string
- *                 example: +56912345678
+ *                 description: Moneda del perfil (se mapea a configuracion.moneda). Ej: CLP, USD, EUR
+ *                 example: CLP
+ *               configuracion:
+ *                 type: object
+ *                 properties:
+ *                   moneda:
+ *                     type: string
+ *                     example: CLP
+ *                   pais:
+ *                     type: string
+ *                     example: CL
+ *               informacionBasica:
+ *                 type: object
+ *                 properties:
+ *                   nombres:
+ *                     type: string
+ *                     example: Franco
+ *                   apellidos:
+ *                     type: string
+ *                     example: Castro
+ *                   correo:
+ *                     type: string
+ *                     format: email
+ *                     example: franco@example.com
+ *                   telefono:
+ *                     type: string
+ *                     example: +56912345678
  *     responses:
  *       201:
  *         description: Perfil creado exitosamente

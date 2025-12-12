@@ -403,13 +403,19 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"nombre\": \"Perfil Personal\",\n  \"tipo\": \"personal\",\n  \"moneda\": \"CLP\"\n}"
+							"raw": "{\n  \"nombre\": \"Franco\",\n  \"tipo\": \"Personal\",\n  \"moneda\": \"CLP\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/profiles",
 							"host": ["{{base_url}}"],
 							"path": ["api", "v1", "profiles"]
-						}
+						},
+						"description": "Crea un nuevo perfil financiero.\n\n**Campos aceptados:**\n- `nombre` o `nombrePerfil` (requerido) - Nombre del perfil\n- `tipo` (requerido) - Tipo de perfil. Acepta: `\"Personal\"`, `\"personal\"`, `\"persona\"`, `\"Empresa\"`, `\"empresa\"` (se normaliza automáticamente)\n- `moneda` (opcional) - Moneda del perfil. Se mapea automáticamente a `configuracion.moneda`. Ej: `\"CLP\"`, `\"USD\"`, `\"EUR\"`\n\n**Ejemplos de formato:**\n\nFormato simple (recomendado):\n```json\n{\n  \"nombre\": \"Franco\",\n  \"tipo\": \"Personal\",\n  \"moneda\": \"CLP\"\n}\n```\n\nFormato completo:\n```json\n{\n  \"nombrePerfil\": \"Franco\",\n  \"tipo\": \"persona\",\n  \"configuracion\": {\n    \"moneda\": \"CLP\",\n    \"pais\": \"CL\"\n  },\n  \"informacionBasica\": {\n    \"nombres\": \"Franco\",\n    \"apellidos\": \"Castro\",\n    \"correo\": \"franco@example.com\"\n  }\n}\n```"
 					}
 				},
 				{
@@ -451,7 +457,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"nombre\": \"Perfil Personal Actualizado\"\n}"
+							"raw": "{\n  \"nombrePerfil\": \"Franco Actualizado\",\n  \"moneda\": \"USD\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/profiles/:id",
@@ -463,7 +474,8 @@
 									"value": "{{profile_id}}"
 								}
 							]
-						}
+						},
+						"description": "Actualiza un perfil existente.\n\n**Nota:** También acepta `nombre` como alias de `nombrePerfil`, y `moneda` en el nivel raíz se mapea a `configuracion.moneda`."
 					}
 				},
 				{

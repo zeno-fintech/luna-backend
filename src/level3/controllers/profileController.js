@@ -154,6 +154,33 @@ exports.getProfile = asyncHandler(async (req, res, next) => {
 exports.createProfile = asyncHandler(async (req, res, next) => {
   req.body.usuarioID = req.user.id;
   
+  // Mapear 'nombre' a 'nombrePerfil' si viene (para compatibilidad)
+  if (req.body.nombre && !req.body.nombrePerfil) {
+    req.body.nombrePerfil = req.body.nombre;
+    delete req.body.nombre;
+  }
+  
+  // Normalizar tipo: convertir 'Personal' a 'persona', 'Empresa' a 'empresa'
+  if (req.body.tipo) {
+    const tipoLower = req.body.tipo.toLowerCase();
+    if (tipoLower === 'personal' || tipoLower === 'persona') {
+      req.body.tipo = 'persona';
+    } else if (tipoLower === 'empresa' || tipoLower === 'company') {
+      req.body.tipo = 'empresa';
+    }
+  }
+  
+  // Mapear 'moneda' del nivel raíz a 'configuracion.moneda' si viene
+  if (req.body.moneda && !req.body.configuracion) {
+    req.body.configuracion = {
+      moneda: req.body.moneda
+    };
+    delete req.body.moneda;
+  } else if (req.body.moneda && req.body.configuracion) {
+    req.body.configuracion.moneda = req.body.moneda;
+    delete req.body.moneda;
+  }
+  
   // Si es perfil principal, asociar correo del usuario si no se proporciona
   if (req.body.isPrincipal && !req.body.informacionBasica?.correo) {
     const User = require('@models/User');
@@ -170,7 +197,7 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
 
   res.status(201).json({
     success: true,
-    data: profile
+    data: profile.getInformacionCompleta()
   });
 });
 
