@@ -71,7 +71,7 @@ router.use(authorize('USER'));
  *                 example: persona
  *               moneda:
  *                 type: string
- *                 description: Moneda del perfil (se mapea a configuracion.moneda). Ej: CLP, USD, EUR
+ *                 description: "Moneda del perfil (se mapea a configuracion.moneda). Ej: CLP, USD, EUR"
  *                 example: CLP
  *               configuracion:
  *                 type: object

@@ -57,7 +57,7 @@ router.get('/', getCountries);
  *         required: true
  *         schema:
  *           type: string
- *         description: Código del país (ej: CL, US, CO)
+ *         description: "Código del país (ej: CL, US, CO)"
  *         example: CL
  *     responses:
  *       200:

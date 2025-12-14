@@ -16,6 +16,17 @@ const debtSchema = new mongoose.Schema({
     enum: ['Personal', 'Institucional', 'Bancaria', 'Comercial'],
     required: true
   },
+  categoria: {
+    type: String,
+    enum: ['TC', 'LC', 'Hipotecario', 'Consumo', 'Personal', 'Comercial', 'Otro'],
+    trim: true
+    // TC = Tarjeta de Crédito
+    // LC = Línea de Crédito
+    // Hipotecario = Crédito Hipotecario
+    // Consumo = Crédito de Consumo
+    // Personal = Deuda personal
+    // Comercial = Deuda comercial
+  },
   prestador: {
     type: String,
     required: [true, 'El prestador es requerido'],

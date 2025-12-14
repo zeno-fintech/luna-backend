@@ -2,6 +2,7 @@ const asyncHandler = require('@core/utils/asyncHandler');
 const Debt = require('@models/Debt');
 const Payment = require('@models/Payment');
 const Profile = require('@models/Profile');
+const debtLevelService = require('@level3/services/debtLevelService');
 
 /**
  * @fileoverview Controlador de Deudas - Maneja CRUD de deudas y pagos
@@ -517,6 +518,41 @@ exports.getDebtsSummary = asyncHandler(async (req, res, next) => {
         }))
       }
     }
+  });
+});
+
+/**
+ * Obtiene el nivel de deuda de un perfil
+ * 
+ * Calcula el nivel de deuda basado en estado de pago, ratio deuda/ingresos, etc.
+ * 
+ * @route GET /api/v1/debts/level?perfilID=xxx
+ * @access Private (requiere autenticación)
+ */
+exports.getDebtLevel = asyncHandler(async (req, res, next) => {
+  const { perfilID, monthlyIncome } = req.query;
+
+  if (!perfilID) {
+    return res.status(400).json({
+      success: false,
+      message: 'El parámetro perfilID es requerido'
+    });
+  }
+
+  // Verificar que el perfil pertenece al usuario
+  if (!(await validateProfileOwnership(req.user.id, perfilID))) {
+    return res.status(404).json({
+      success: false,
+      message: 'Perfil no encontrado o no pertenece al usuario'
+    });
+  }
+
+  const monthlyIncomeNum = monthlyIncome ? parseFloat(monthlyIncome) : null;
+  const debtLevel = await debtLevelService.calculateDebtLevel(perfilID, monthlyIncomeNum);
+
+  res.status(200).json({
+    success: true,
+    data: debtLevel
   });
 });
 

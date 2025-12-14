@@ -101,7 +101,38 @@ exports.getAsset = asyncHandler(async (req, res, next) => {
  * @access Private (requiere autenticación)
  */
 exports.createAsset = asyncHandler(async (req, res, next) => {
-  const { perfilID, tipo, valor, fecha, descripcion } = req.body;
+  const {
+    perfilID,
+    tipo,
+    valor,
+    moneda,
+    fecha,
+    descripcion,
+    // Campos de propiedades
+    rol,
+    direccion,
+    comuna,
+    avaluoFiscal,
+    valorComercial,
+    grupoPropiedad,
+    tipoPropiedad,
+    metrosTotales,
+    metrosConstruidos,
+    metrosTerreno,
+    numeroDormitorios,
+    numeroBanos,
+    numeroEstacionamientos,
+    piso,
+    // Campos de vehículos
+    marca,
+    modelo,
+    año,
+    kilometraje,
+    patente,
+    color,
+    // Metadata
+    metadata
+  } = req.body;
 
   if (!perfilID || !tipo || !valor) {
     return res.status(400).json({
@@ -122,8 +153,33 @@ exports.createAsset = asyncHandler(async (req, res, next) => {
     perfilID,
     tipo,
     valor,
+    moneda: moneda || 'CLP',
     fecha: fecha || new Date(),
-    descripcion: descripcion || null
+    descripcion: descripcion || null,
+    // Campos de propiedades
+    rol: rol || null,
+    direccion: direccion || null,
+    comuna: comuna || null,
+    avaluoFiscal: avaluoFiscal || null,
+    valorComercial: valorComercial || null,
+    grupoPropiedad: grupoPropiedad || null,
+    tipoPropiedad: tipoPropiedad || null,
+    metrosTotales: metrosTotales || null,
+    metrosConstruidos: metrosConstruidos || null,
+    metrosTerreno: metrosTerreno || null,
+    numeroDormitorios: numeroDormitorios || null,
+    numeroBanos: numeroBanos || null,
+    numeroEstacionamientos: numeroEstacionamientos || null,
+    piso: piso || null,
+    // Campos de vehículos
+    marca: marca || null,
+    modelo: modelo || null,
+    año: año || null,
+    kilometraje: kilometraje || null,
+    patente: patente || null,
+    color: color || null,
+    // Metadata
+    metadata: metadata || {}
   });
 
   res.status(201).json({

@@ -6,7 +6,8 @@ const {
   updateDebt,
   deleteDebt,
   payDebt,
-  getDebtsSummary
+  getDebtsSummary,
+  getDebtLevel
 } = require('@level3/controllers/debtController');
 const { protect, authorize } = require('@core/middleware/auth');
 
@@ -113,6 +114,60 @@ router.route('/')
  *         description: Resumen de deudas con totales y estadísticas
  */
 router.get('/summary', getDebtsSummary);
+
+/**
+ * @swagger
+ * /api/v1/debts/level:
+ *   get:
+ *     summary: Obtiene el nivel de deuda del perfil
+ *     tags: [Debts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: perfilID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID del perfil
+ *       - in: query
+ *         name: monthlyIncome
+ *         schema:
+ *           type: number
+ *         description: Ingresos mensuales (opcional, se calcula automáticamente si no se proporciona)
+ *     responses:
+ *       200:
+ *         description: Nivel de deuda calculado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     level:
+ *                       type: number
+ *                       enum: [1, 2, 3, 4]
+ *                       description: "1=Saludable, 2=Controlada, 3=En Riesgo, 4=Crítica"
+ *                     levelName:
+ *                       type: string
+ *                     levelColor:
+ *                       type: string
+ *                     message:
+ *                       type: string
+ *                     totalDebt:
+ *                       type: number
+ *                     debtToIncomeRatio:
+ *                       type: string
+ *                     recommendations:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ */
+router.get('/level', getDebtLevel);
 
 /**
  * @swagger

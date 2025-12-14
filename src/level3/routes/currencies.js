@@ -62,7 +62,7 @@ router.get('/', getCurrencies);
  *         required: true
  *         schema:
  *           type: string
- *         description: Código de la moneda (ej: CLP, USD, COP)
+ *         description: "Código de la moneda (ej: CLP, USD, COP)"
  *         example: CLP
  *     responses:
  *       200:
