@@ -48,11 +48,11 @@ exports.suggestBoardIcon = asyncHandler(async (req, res, next) => {
  * Analiza los gastos de los últimos meses y sugiere cuáles deberían
  * marcarse como fijos si se repiten 2-3 meses consecutivos.
  * 
- * @route GET /api/v1/ai/suggest-fixed-expenses?perfilID=xxx&tableroID=xxx
+ * @route GET /api/v1/ai/suggest-fixed-expenses?perfilID=xxx&presupuestoID=xxx
  * @access Private (requiere autenticación)
  */
 exports.suggestFixedExpenses = asyncHandler(async (req, res, next) => {
-  const { perfilID, tableroID } = req.query;
+  const { perfilID, presupuestoID } = req.query;
 
   if (!perfilID) {
     return res.status(400).json({
@@ -69,7 +69,7 @@ exports.suggestFixedExpenses = asyncHandler(async (req, res, next) => {
     });
   }
 
-  const sugerencias = await aiService.suggestFixedExpenses(perfilID, tableroID);
+  const sugerencias = await aiService.suggestFixedExpenses(perfilID, presupuestoID);
 
   res.status(200).json({
     success: true,

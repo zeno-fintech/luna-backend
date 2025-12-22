@@ -18,14 +18,26 @@ const debtSchema = new mongoose.Schema({
   },
   categoria: {
     type: String,
-    enum: ['TC', 'LC', 'Hipotecario', 'Consumo', 'Personal', 'Comercial', 'Otro'],
+    enum: [
+      // Deudas hipotecarias
+      'Hipotecario',
+      // Deudas automotrices
+      'Automotriz',
+      // Tarjetas de crédito
+      'Tarjeta de Crédito',
+      // Créditos de consumo
+      'Consumo', 'Préstamo Personal', 'Crédito Bancario',
+      // Deudas con terceros
+      'Deuda Familiar', 'Deuda Amigo',
+      // Otros
+      'Línea de Crédito', 'Comercial', 'Otro'
+    ],
     trim: true
-    // TC = Tarjeta de Crédito
-    // LC = Línea de Crédito
-    // Hipotecario = Crédito Hipotecario
-    // Consumo = Crédito de Consumo
-    // Personal = Deuda personal
-    // Comercial = Deuda comercial
+  },
+  presupuestoID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Presupuesto'
+    // Opcional: asociar deuda a un presupuesto específico
   },
   prestador: {
     type: String,
@@ -136,6 +148,7 @@ debtSchema.pre('save', function(next) {
 // Indexes
 debtSchema.index({ perfilID: 1 });
 debtSchema.index({ perfilID: 1, estado: 1 });
+debtSchema.index({ presupuestoID: 1 });
 debtSchema.index({ fechaVencimiento: 1 });
 
 module.exports = mongoose.model('Debt', debtSchema);

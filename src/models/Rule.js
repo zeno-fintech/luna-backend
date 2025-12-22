@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const ruleSchema = new mongoose.Schema({
-  tableroID: {
+  presupuestoID: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'FinancialBoard',
+    ref: 'Presupuesto',
     required: true
   },
   porcentaje: {
@@ -50,19 +50,20 @@ const ruleSchema = new mongoose.Schema({
 
 // Pre-save hook para calcular presupuestoRegla y montoDisponible
 ruleSchema.pre('save', async function(next) {
-  if (this.isNew || this.isModified('porcentaje') || this.isModified('tableroID')) {
-    const FinancialBoard = require('@models/FinancialBoard');
-    const board = await FinancialBoard.findById(this.tableroID);
+  const Presupuesto = require('@models/Presupuesto');
+  
+  if (this.isNew || this.isModified('porcentaje') || this.isModified('presupuestoID')) {
+    const presupuesto = await Presupuesto.findById(this.presupuestoID);
     
-    if (board) {
-      // Calcular presupuesto basado en porcentaje del saldo del tablero
+    if (presupuesto) {
+      // Calcular presupuesto basado en porcentaje del saldo del presupuesto
       // El saldo es ingresos - gastos, pero para presupuesto usamos ingresos
-      this.presupuestoRegla = (board.ingresos * this.porcentaje) / 100;
+      this.presupuestoRegla = (presupuesto.ingresos * this.porcentaje) / 100;
       
       // Calcular monto disponible (presupuesto - gastos ya realizados en esta regla)
       const Transaction = require('@models/Transaction');
       const gastosRegla = await Transaction.find({
-        tableroID: board._id,
+        presupuestoID: presupuesto._id,
         reglaID: this._id,
         tipo: 'Gasto'
       });
@@ -77,18 +78,18 @@ ruleSchema.pre('save', async function(next) {
 
 // Método para recalcular monto disponible y saldo
 ruleSchema.methods.recalcularMontos = async function() {
-  const FinancialBoard = require('@models/FinancialBoard');
+  const Presupuesto = require('@models/Presupuesto');
   const Transaction = require('@models/Transaction');
   
-  const board = await FinancialBoard.findById(this.tableroID);
-  if (!board) return this;
+  const presupuesto = await Presupuesto.findById(this.presupuestoID);
+  if (!presupuesto) return this;
   
   // Recalcular presupuesto
-  this.presupuestoRegla = (board.ingresos * this.porcentaje) / 100;
+  this.presupuestoRegla = (presupuesto.ingresos * this.porcentaje) / 100;
   
   // Calcular gastos de esta regla
   const gastosRegla = await Transaction.find({
-    tableroID: board._id,
+    presupuestoID: presupuesto._id,
     reglaID: this._id,
     tipo: 'Gasto'
   });

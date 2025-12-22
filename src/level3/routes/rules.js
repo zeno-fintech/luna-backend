@@ -31,10 +31,10 @@ router.use(authorize('USER'));
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
- *         name: tableroID
+ *         name: presupuestoID
  *         schema:
  *           type: string
- *         description: Filtrar por tablero financiero
+ *         description: Filtrar por presupuesto
  *     responses:
  *       200:
  *         description: Lista de reglas
@@ -52,7 +52,7 @@ router.use(authorize('USER'));
  *             required:
  *               - nombre
  *               - porcentaje
- *               - tableroID
+ *               - presupuestoID
  *             properties:
  *               nombre:
  *                 type: string
@@ -62,7 +62,7 @@ router.use(authorize('USER'));
  *                 minimum: 0
  *                 maximum: 100
  *                 example: 50
- *               tableroID:
+ *               presupuestoID:
  *                 type: string
  *               icono:
  *                 type: string

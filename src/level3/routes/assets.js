@@ -4,7 +4,8 @@ const {
   getAsset,
   createAsset,
   updateAsset,
-  deleteAsset
+  deleteAsset,
+  getTotalizador
 } = require('@level3/controllers/assetController');
 const { protect, authorize } = require('@core/middleware/auth');
 
@@ -83,6 +84,27 @@ router.use(authorize('USER'));
  *       201:
  *         description: Activo creado exitosamente
  */
+/**
+ * @swagger
+ * /api/v1/assets/totalizador:
+ *   get:
+ *     summary: Obtiene el totalizador de activos
+ *     tags: [Assets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: perfilID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID del perfil
+ *     responses:
+ *       200:
+ *         description: Totalizador de activos
+ */
+router.get('/totalizador', getTotalizador);
+
 router.route('/')
   .get(getAssets)
   .post(createAsset);

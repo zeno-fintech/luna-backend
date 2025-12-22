@@ -69,7 +69,7 @@ router.get('/suggest-board-icon', suggestBoardIcon);
  *           type: string
  *         description: ID del perfil
  *       - in: query
- *         name: tableroID
+ *         name: presupuestoID
  *         schema:
  *           type: string
  *         description: ID del tablero financiero

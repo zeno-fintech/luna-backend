@@ -9,7 +9,7 @@ require('../src/config/aliases');
 const mongoose = require('mongoose');
 const User = require('@models/User');
 const Profile = require('@models/Profile');
-const FinancialBoard = require('@models/FinancialBoard');
+const Presupuesto = require('@models/Presupuesto');
 const Rule = require('@models/Rule');
 const Asset = require('@models/Asset');
 const AssetValuation = require('@models/AssetValuation');
@@ -40,7 +40,7 @@ async function populateFrancoData() {
     }
     console.log(`   ✅ Perfil encontrado: ${profile.nombrePerfil}\n`);
 
-    // 3. Crear Tablero Financiero "Depto"
+    // 3. Crear Presupuesto Financiero "Depto"
     console.log('📊 Creando tablero financiero "Depto"...');
     const now = new Date();
     const año = now.getFullYear();
@@ -50,17 +50,17 @@ async function populateFrancoData() {
     const id_mes = `${meses[mes - 1]}-${año}`;
 
     // Verificar si ya existe
-    let board = await FinancialBoard.findOne({
+    let presupuesto = await Presupuesto.findOne({
       perfilID: profile._id,
       nombre: 'Depto',
       año,
       mes
     });
 
-    if (board) {
-      console.log('   ⚠️  Tablero ya existe, actualizando...');
+    if (presupuesto) {
+      console.log('   ⚠️  Presupuesto ya existe, actualizando...');
     } else {
-      board = await FinancialBoard.create({
+      presupuesto = await Presupuesto.create({
         perfilID: profile._id,
         nombre: 'Depto',
         moneda: 'CLP',
@@ -74,32 +74,32 @@ async function populateFrancoData() {
         color: '#3B82F6',
         icono: 'home'
       });
-      console.log('   ✅ Tablero creado\n');
+      console.log('   ✅ Presupuesto creado\n');
     }
 
     // 4. Crear reglas 50-30-20
     console.log('📐 Creando reglas 50-30-20...');
     
     // Eliminar reglas existentes del tablero
-    await Rule.deleteMany({ tableroID: board._id });
+    await Rule.deleteMany({ presupuestoID: presupuesto._id });
 
     const reglas = [
       {
-        tableroID: board._id,
+        presupuestoID: presupuesto._id,
         porcentaje: 50,
         nombre: 'Gastos Esenciales',
         color: '#10B981', // Verde
         icono: 'home'
       },
       {
-        tableroID: board._id,
+        presupuestoID: presupuesto._id,
         porcentaje: 30,
         nombre: 'Gastos Extras',
         color: '#F59E0B', // Amarillo
         icono: 'shopping-cart'
       },
       {
-        tableroID: board._id,
+        presupuestoID: presupuesto._id,
         porcentaje: 20,
         nombre: 'Objetivos (Salir de Deudas)',
         color: '#EF4444', // Rojo
@@ -108,8 +108,8 @@ async function populateFrancoData() {
     ];
 
     const reglasCreadas = await Rule.insertMany(reglas);
-    board.reglas = reglasCreadas.map(r => r._id);
-    await board.save();
+    presupuesto.reglas = reglasCreadas.map(r => r._id);
+    await presupuesto.save();
     console.log('   ✅ Reglas creadas: 50% Esenciales, 30% Extras, 20% Objetivos\n');
 
     // 5. Crear Activos (Propiedades)
@@ -392,7 +392,7 @@ async function populateFrancoData() {
     // Resumen final
     console.log('✅ ¡Datos poblados exitosamente!\n');
     console.log('📊 Resumen:');
-    console.log(`   - Tablero Financiero: "Depto" (${meses[mes - 1]} ${año})`);
+    console.log(`   - Presupuesto Financiero: "Depto" (${meses[mes - 1]} ${año})`);
     console.log(`   - Reglas: 50% Esenciales, 30% Extras, 20% Objetivos`);
     console.log(`   - Activos: 3 propiedades (Depto, Estacionamiento, Bodega)`);
     console.log(`   - Tasaciones: 2 tasaciones del depto`);

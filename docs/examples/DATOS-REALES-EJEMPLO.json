@@ -1,0 +1,491 @@
+{
+  "usuario": {
+    "correo": "juan.perez@example.com",
+    "nombres": "Juan",
+    "apellidos": "Pérez González",
+    "planLevel": "premium"
+  },
+  "perfil": {
+    "nombrePerfil": "Juan Pérez",
+    "tipo": "persona",
+    "configuracion": {
+      "pais": "CL",
+      "moneda": "CLP",
+      "zonaHoraria": "America/Santiago"
+    },
+    "isDefault": true
+  },
+  "cuentas": [
+    {
+      "nombre": "Cuenta Corriente Banco de Chile",
+      "banco": "Banco de Chile",
+      "tipoCuenta": "Corriente",
+      "saldoDisponible": 2500000,
+      "moneda": "CLP",
+      "favorito": true
+    },
+    {
+      "nombre": "Cuenta de Ahorro",
+      "banco": "Banco de Chile",
+      "tipoCuenta": "Ahorro",
+      "saldoDisponible": 5000000,
+      "moneda": "CLP",
+      "favorito": false
+    },
+    {
+      "nombre": "Tarjeta de Crédito Visa",
+      "banco": "Banco de Chile",
+      "tipoCuenta": "Tarjeta de Crédito",
+      "saldoDisponible": -450000,
+      "moneda": "CLP",
+      "favorito": false
+    }
+  ],
+  "presupuesto": {
+    "nombre": "Presupuesto Personal",
+    "año": 2025,
+    "mes": 12,
+    "moneda": "CLP",
+    "color": "#3B82F6",
+    "icono": "wallet",
+    "ingresos": 3500000,
+    "gastos": 2800000,
+    "saldo": 700000,
+    "reglas": [
+      {
+        "nombre": "Gastos Fijos",
+        "porcentaje": 50,
+        "presupuestoRegla": 1750000,
+        "montoDisponible": 1200000,
+        "saldo": 1200000,
+        "color": "#EF4444",
+        "icono": "home"
+      },
+      {
+        "nombre": "Gastos Variables",
+        "porcentaje": 30,
+        "presupuestoRegla": 1050000,
+        "montoDisponible": 800000,
+        "saldo": 800000,
+        "color": "#F59E0B",
+        "icono": "shopping-cart"
+      },
+      {
+        "nombre": "Ahorro",
+        "porcentaje": 20,
+        "presupuestoRegla": 700000,
+        "montoDisponible": 700000,
+        "saldo": 700000,
+        "color": "#10B981",
+        "icono": "piggy-bank"
+      }
+    ]
+  },
+  "ingresos": [
+    {
+      "glosa": "Sueldo Líquido",
+      "monto": 3000000,
+      "fecha": "2025-12-01",
+      "tipo": "Sueldo Líquido",
+      "tipoTrabajador": "Dependiente",
+      "presupuestoID": "presupuesto_id_aqui"
+    },
+    {
+      "glosa": "Bono de Navidad",
+      "monto": 500000,
+      "fecha": "2025-12-15",
+      "tipo": "Bono",
+      "tipoTrabajador": "Dependiente",
+      "presupuestoID": "presupuesto_id_aqui"
+    }
+  ],
+  "gastos": [
+    {
+      "tipo": "Gasto",
+      "monto": 450000,
+      "fecha": "2025-12-01",
+      "detalle": "Dividendo departamento",
+      "metodoPago": "Transferencia",
+      "categoriaID": "categoria_vivienda_id",
+      "presupuestoID": "presupuesto_id_aqui",
+      "reglaID": "regla_gastos_fijos_id",
+      "esGastoFijo": true,
+      "recurrencia": "Mensual"
+    },
+    {
+      "tipo": "Gasto",
+      "monto": 120000,
+      "fecha": "2025-12-05",
+      "detalle": "Gastos comunes",
+      "metodoPago": "Transferencia",
+      "categoriaID": "categoria_vivienda_id",
+      "presupuestoID": "presupuesto_id_aqui",
+      "reglaID": "regla_gastos_fijos_id",
+      "esGastoFijo": true,
+      "recurrencia": "Mensual"
+    },
+    {
+      "tipo": "Gasto",
+      "monto": 35000,
+      "fecha": "2025-12-10",
+      "detalle": "Luz",
+      "metodoPago": "Transferencia",
+      "categoriaID": "categoria_servicios_id",
+      "presupuestoID": "presupuesto_id_aqui",
+      "reglaID": "regla_gastos_fijos_id",
+      "esGastoFijo": true,
+      "recurrencia": "Mensual"
+    },
+    {
+      "tipo": "Gasto",
+      "monto": 25000,
+      "fecha": "2025-12-10",
+      "detalle": "Agua",
+      "metodoPago": "Transferencia",
+      "categoriaID": "categoria_servicios_id",
+      "presupuestoID": "presupuesto_id_aqui",
+      "reglaID": "regla_gastos_fijos_id",
+      "esGastoFijo": true,
+      "recurrencia": "Mensual"
+    },
+    {
+      "tipo": "Gasto",
+      "monto": 25000,
+      "fecha": "2025-12-10",
+      "detalle": "Internet",
+      "metodoPago": "Transferencia",
+      "categoriaID": "categoria_servicios_id",
+      "presupuestoID": "presupuesto_id_aqui",
+      "reglaID": "regla_gastos_fijos_id",
+      "esGastoFijo": true,
+      "recurrencia": "Mensual"
+    },
+    {
+      "tipo": "Gasto",
+      "monto": 15000,
+      "fecha": "2025-12-10",
+      "detalle": "Telefonía",
+      "metodoPago": "Transferencia",
+      "categoriaID": "categoria_servicios_id",
+      "presupuestoID": "presupuesto_id_aqui",
+      "reglaID": "regla_gastos_fijos_id",
+      "esGastoFijo": true,
+      "recurrencia": "Mensual"
+    },
+    {
+      "tipo": "Gasto",
+      "monto": 150000,
+      "fecha": "2025-12-05",
+      "detalle": "Seguro de salud",
+      "metodoPago": "Débito Automático",
+      "categoriaID": "categoria_seguros_id",
+      "presupuestoID": "presupuesto_id_aqui",
+      "reglaID": "regla_gastos_fijos_id",
+      "esGastoFijo": true,
+      "recurrencia": "Mensual"
+    },
+    {
+      "tipo": "Gasto",
+      "monto": 80000,
+      "fecha": "2025-12-01",
+      "detalle": "Cuota mínima Tarjeta de Crédito",
+      "metodoPago": "Transferencia",
+      "categoriaID": "categoria_deudas_id",
+      "presupuestoID": "presupuesto_id_aqui",
+      "reglaID": "regla_gastos_fijos_id",
+      "esGastoFijo": true,
+      "recurrencia": "Mensual",
+      "deudaID": "deuda_tc_id"
+    },
+    {
+      "tipo": "Gasto",
+      "monto": 200000,
+      "fecha": "2025-12-12",
+      "detalle": "Supermercado",
+      "metodoPago": "Tarjeta de Débito",
+      "categoriaID": "categoria_alimentacion_id",
+      "presupuestoID": "presupuesto_id_aqui",
+      "reglaID": "regla_gastos_variables_id",
+      "esGastoFijo": false
+    },
+    {
+      "tipo": "Gasto",
+      "monto": 50000,
+      "fecha": "2025-12-15",
+      "detalle": "Almacén",
+      "metodoPago": "Efectivo",
+      "categoriaID": "categoria_alimentacion_id",
+      "presupuestoID": "presupuesto_id_aqui",
+      "reglaID": "regla_gastos_variables_id",
+      "esGastoFijo": false
+    },
+    {
+      "tipo": "Gasto",
+      "monto": 30000,
+      "fecha": "2025-12-08",
+      "detalle": "Medicamentos",
+      "metodoPago": "Tarjeta de Débito",
+      "categoriaID": "categoria_salud_id",
+      "presupuestoID": "presupuesto_id_aqui",
+      "reglaID": "regla_gastos_variables_id",
+      "esGastoFijo": false
+    },
+    {
+      "tipo": "Gasto",
+      "monto": 15000,
+      "fecha": "2025-12-20",
+      "detalle": "Netflix",
+      "metodoPago": "Tarjeta de Crédito",
+      "categoriaID": "categoria_entretenimiento_id",
+      "presupuestoID": "presupuesto_id_aqui",
+      "reglaID": "regla_gastos_variables_id",
+      "esGastoFijo": true,
+      "recurrencia": "Mensual"
+    },
+    {
+      "tipo": "Gasto",
+      "monto": 25000,
+      "fecha": "2025-12-18",
+      "detalle": "Restaurante",
+      "metodoPago": "Tarjeta de Crédito",
+      "categoriaID": "categoria_entretenimiento_id",
+      "presupuestoID": "presupuesto_id_aqui",
+      "reglaID": "regla_gastos_variables_id",
+      "esGastoFijo": false
+    }
+  ],
+  "activos": [
+    {
+      "tipo": "Departamento",
+      "valor": 85000000,
+      "moneda": "CLP",
+      "fecha": "2021-06-01",
+      "descripcion": "Departamento 3D2B en Las Condes",
+      "rol": "02524-00179",
+      "direccion": "Av. Las Condes 755",
+      "comuna": "Las Condes",
+      "avaluoFiscal": 75000000,
+      "valorComercial": 85000000,
+      "grupoPropiedad": "depto-america-755",
+      "tipoPropiedad": "Depto",
+      "metrosTotales": 85,
+      "metrosConstruidos": 75,
+      "metrosTerreno": 0,
+      "numeroDormitorios": 3,
+      "numeroBanos": 2,
+      "numeroEstacionamientos": 1,
+      "piso": 7,
+      "presupuestoID": "presupuesto_id_aqui"
+    },
+    {
+      "tipo": "Estacionamiento",
+      "valor": 8000000,
+      "moneda": "CLP",
+      "fecha": "2021-06-01",
+      "descripcion": "Estacionamiento del departamento",
+      "rol": "02524-00180",
+      "direccion": "Av. Las Condes 755",
+      "comuna": "Las Condes",
+      "avaluoFiscal": 7000000,
+      "valorComercial": 8000000,
+      "grupoPropiedad": "depto-america-755",
+      "tipoPropiedad": "Estacionamiento",
+      "metrosTotales": 12,
+      "metrosConstruidos": 0,
+      "metrosTerreno": 12,
+      "numeroDormitorios": 0,
+      "numeroBanos": 0,
+      "numeroEstacionamientos": 1,
+      "presupuestoID": "presupuesto_id_aqui"
+    },
+    {
+      "tipo": "Bodega",
+      "valor": 3000000,
+      "moneda": "CLP",
+      "fecha": "2021-06-01",
+      "descripcion": "Bodega del departamento",
+      "rol": "02524-00181",
+      "direccion": "Av. Las Condes 755",
+      "comuna": "Las Condes",
+      "avaluoFiscal": 2500000,
+      "valorComercial": 3000000,
+      "grupoPropiedad": "depto-america-755",
+      "tipoPropiedad": "Bodega",
+      "metrosTotales": 6,
+      "metrosConstruidos": 0,
+      "metrosTerreno": 6,
+      "numeroDormitorios": 0,
+      "numeroBanos": 0,
+      "numeroEstacionamientos": 0,
+      "presupuestoID": "presupuesto_id_aqui"
+    },
+    {
+      "tipo": "Cuenta Corriente",
+      "valor": 2500000,
+      "moneda": "CLP",
+      "fecha": "2025-12-01",
+      "descripcion": "Saldo disponible en cuenta corriente",
+      "presupuestoID": "presupuesto_id_aqui"
+    },
+    {
+      "tipo": "Cuenta Ahorro",
+      "valor": 5000000,
+      "moneda": "CLP",
+      "fecha": "2025-12-01",
+      "descripcion": "Fondo de emergencia",
+      "presupuestoID": "presupuesto_id_aqui"
+    }
+  ],
+  "tasaciones": [
+    {
+      "activoID": "activo_depto_id",
+      "fecha": "2021-06-01",
+      "valorUF": 4444,
+      "valorUFEnCLP": 35000,
+      "valorCLP": 155540000,
+      "tipoTasacion": "Compra",
+      "institucion": "Inmobiliaria",
+      "observaciones": "Precio de compra original"
+    },
+    {
+      "activoID": "activo_depto_id",
+      "fecha": "2022-06-01",
+      "valorUF": 5200,
+      "valorUFEnCLP": 37000,
+      "valorCLP": 192400000,
+      "tipoTasacion": "Tasación Bancaria",
+      "institucion": "Banco de Chile",
+      "observaciones": "Tasación para crédito hipotecario"
+    }
+  ],
+  "pasivos": [
+    {
+      "nombre": "Crédito Hipotecario",
+      "tipo": "Bancaria",
+      "categoria": "Hipotecario",
+      "prestador": "Banco de Chile",
+      "montoTotal": 120000000,
+      "numeroCuotas": 252,
+      "montoCuota": 476190,
+      "saldoPendiente": 100000000,
+      "saldoPagado": 20000000,
+      "tasaInteres": 2.5,
+      "fechaInicio": "2022-06-01",
+      "fechaVencimiento": "2043-06-01",
+      "estado": "Activa",
+      "moneda": "UF",
+      "descripcion": "Crédito hipotecario para departamento",
+      "presupuestoID": "presupuesto_id_aqui"
+    },
+    {
+      "nombre": "Tarjeta de Crédito Scotiabank",
+      "tipo": "Bancaria",
+      "categoria": "Tarjeta de Crédito",
+      "prestador": "Scotiabank",
+      "montoTotal": 0,
+      "abonoMensual": 80000,
+      "montoCuota": 80000,
+      "saldoPendiente": 450000,
+      "saldoPagado": 0,
+      "tasaInteres": 2.5,
+      "fechaInicio": "2020-01-01",
+      "estado": "Activa",
+      "moneda": "CLP",
+      "descripcion": "TC principal",
+      "presupuestoID": "presupuesto_id_aqui"
+    },
+    {
+      "nombre": "Crédito de Consumo Scotiabank",
+      "tipo": "Bancaria",
+      "categoria": "Consumo",
+      "prestador": "Scotiabank",
+      "montoTotal": 5000000,
+      "numeroCuotas": 24,
+      "montoCuota": 250000,
+      "saldoPendiente": 3000000,
+      "saldoPagado": 2000000,
+      "tasaInteres": 1.8,
+      "fechaInicio": "2024-01-01",
+      "fechaVencimiento": "2026-01-01",
+      "estado": "Activa",
+      "moneda": "CLP",
+      "descripcion": "Crédito de consumo",
+      "presupuestoID": "presupuesto_id_aqui"
+    }
+  ],
+  "pagos": [
+    {
+      "deudaID": "deuda_hipotecario_id",
+      "monto": 476190,
+      "fecha": "2025-12-01",
+      "numeroCuota": 42,
+      "estado": "pagado"
+    },
+    {
+      "deudaID": "deuda_tc_id",
+      "monto": 80000,
+      "fecha": "2025-12-01",
+      "numeroCuota": 1,
+      "estado": "pagado"
+    }
+  ],
+  "ahorros": [
+    {
+      "tipo": "Fondo de Emergencia",
+      "monto": 5000000,
+      "descripcion": "Fondo de emergencia 6 meses",
+      "fechaObjetivo": null,
+      "reglaID": "regla_ahorro_id"
+    },
+    {
+      "tipo": "Ahorro Objetivo",
+      "monto": 2000000,
+      "descripcion": "Ahorro para vacaciones 2026",
+      "fechaObjetivo": "2026-07-01",
+      "reglaID": "regla_ahorro_id"
+    }
+  ],
+  "patrimonioNeto": {
+    "totalActivos": 103500000,
+    "totalPasivos": 103450000,
+    "patrimonioNeto": 50000,
+    "desglose": {
+      "activos": {
+        "Líquidos": {
+          "cantidad": 2,
+          "valorTotal": 7500000
+        },
+        "Bienes Raíces": {
+          "cantidad": 3,
+          "valorTotal": 96000000
+        }
+      },
+      "pasivos": {
+        "Hipotecario": {
+          "cantidad": 1,
+          "montoTotal": 120000000,
+          "saldoPendiente": 100000000
+        },
+        "Tarjeta de Crédito": {
+          "cantidad": 1,
+          "montoTotal": 0,
+          "saldoPendiente": 450000
+        },
+        "Consumo": {
+          "cantidad": 1,
+          "montoTotal": 5000000,
+          "saldoPendiente": 3000000
+        }
+      }
+    }
+  },
+  "metricas": {
+    "scoreFinanciero": 72,
+    "nivelDeuda": 2,
+    "ratioDeudaIngresos": 0.35,
+    "tasaAhorro": 0.20,
+    "patrimonioNeto": 50000,
+    "tendencia": "mejorando"
+  }
+}
+

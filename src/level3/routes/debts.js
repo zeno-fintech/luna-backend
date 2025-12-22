@@ -7,7 +7,8 @@ const {
   deleteDebt,
   payDebt,
   getDebtsSummary,
-  getDebtLevel
+  getDebtLevel,
+  getTotalizador
 } = require('@level3/controllers/debtController');
 const { protect, authorize } = require('@core/middleware/auth');
 
@@ -168,6 +169,28 @@ router.get('/summary', getDebtsSummary);
  *                         type: string
  */
 router.get('/level', getDebtLevel);
+router.get('/totalizador', getTotalizador);
+
+/**
+ * @swagger
+ * /api/v1/debts/totalizador:
+ *   get:
+ *     summary: Obtiene el totalizador de deudas
+ *     tags: [Debts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: perfilID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID del perfil
+ *     responses:
+ *       200:
+ *         description: Totalizador de deudas
+ */
+router.get('/totalizador', getTotalizador);
 
 /**
  * @swagger

@@ -1,6 +1,6 @@
 const asyncHandler = require('@core/utils/asyncHandler');
 const Income = require('@models/Income');
-const FinancialBoard = require('@models/FinancialBoard');
+const Presupuesto = require('@models/Presupuesto');
 const Profile = require('@models/Profile');
 
 /**
@@ -17,13 +17,13 @@ const validateProfileOwnership = async (userId, profileId) => {
 };
 
 /**
- * Obtiene todos los ingresos de un perfil (opcionalmente filtrados por tablero)
+ * Obtiene todos los ingresos de un perfil (opcionalmente filtrados por presupuesto)
  * 
- * @route GET /api/v1/incomes?perfilID=xxx&tableroID=xxx&tipo=recurrente
+ * @route GET /api/v1/incomes?perfilID=xxx&presupuestoID=xxx&tipo=recurrente
  * @access Private (requiere autenticación)
  */
 exports.getIncomes = asyncHandler(async (req, res, next) => {
-  const { perfilID, tableroID, tipo } = req.query;
+  const { perfilID, presupuestoID, tipo } = req.query;
 
   if (!perfilID) {
     return res.status(400).json({
@@ -41,11 +41,11 @@ exports.getIncomes = asyncHandler(async (req, res, next) => {
   }
 
   const query = { perfilID };
-  if (tableroID) query.tableroID = tableroID;
+  if (presupuestoID) query.presupuestoID = presupuestoID;
   if (tipo) query.tipo = tipo;
 
   const incomes = await Income.find(query)
-    .populate('tableroID', 'nombre moneda')
+    .populate('presupuestoID', 'nombre moneda')
     .sort({ fecha: -1 });
 
   res.status(200).json({
@@ -63,7 +63,7 @@ exports.getIncomes = asyncHandler(async (req, res, next) => {
  */
 exports.getIncome = asyncHandler(async (req, res, next) => {
   const income = await Income.findById(req.params.id)
-    .populate('tableroID', 'nombre moneda');
+    .populate('presupuestoID', 'nombre moneda');
 
   if (!income) {
     return res.status(404).json({
@@ -89,7 +89,7 @@ exports.getIncome = asyncHandler(async (req, res, next) => {
 /**
  * Crea un nuevo ingreso
  * 
- * Si tableroID está definido, va directo a ese tablero.
+ * Si presupuestoID está definido, va directo a ese tablero.
  * Si no, se divide entre los tableros activos del mes según porcentajeDistribucion.
  * Si hay solo 1 tablero, 100% va a ese tablero automáticamente.
  * 
@@ -97,7 +97,7 @@ exports.getIncome = asyncHandler(async (req, res, next) => {
  * @access Private (requiere autenticación)
  */
 exports.createIncome = asyncHandler(async (req, res, next) => {
-  const { perfilID, tableroID, glosa, monto, fecha, tipo, porcentajeDistribucion } = req.body;
+  const { perfilID, presupuestoID, glosa, monto, fecha, tipo, porcentajeDistribucion } = req.body;
 
   if (!perfilID || !glosa || !monto) {
     return res.status(400).json({
@@ -114,19 +114,19 @@ exports.createIncome = asyncHandler(async (req, res, next) => {
     });
   }
 
-  // Si tableroID está definido, crear ingreso directo
-  if (tableroID) {
-    const board = await FinancialBoard.findById(tableroID);
-    if (!board || board.perfilID.toString() !== perfilID) {
+  // Si presupuestoID está definido, crear ingreso directo
+  if (presupuestoID) {
+    const presupuesto = await Presupuesto.findById(presupuestoID);
+    if (!presupuesto || presupuesto.perfilID.toString() !== perfilID) {
       return res.status(400).json({
         success: false,
-        message: 'Tablero no válido o no pertenece al perfil'
+        message: 'Presupuesto no válido o no pertenece al perfil'
       });
     }
 
     const income = await Income.create({
       perfilID,
-      tableroID,
+      presupuestoID,
       glosa,
       monto,
       fecha: fecha || new Date(),
@@ -134,7 +134,7 @@ exports.createIncome = asyncHandler(async (req, res, next) => {
     });
 
     // Actualizar totales del tablero
-    await board.recalcularTotales();
+    await presupuesto.recalcularTotales();
 
     return res.status(201).json({
       success: true,
@@ -142,7 +142,7 @@ exports.createIncome = asyncHandler(async (req, res, next) => {
     });
   }
 
-  // Si no hay tableroID, crear ingreso sin asignar (el usuario lo asignará manualmente)
+  // Si no hay presupuestoID, crear ingreso sin asignar (el usuario lo asignará manualmente)
   // NO se divide automáticamente entre tableros (solo si el usuario lo solicita explícitamente)
   const income = await Income.create({
     perfilID,
@@ -156,7 +156,7 @@ exports.createIncome = asyncHandler(async (req, res, next) => {
   res.status(201).json({
     success: true,
     data: income,
-    message: 'Ingreso creado. Asigna un tableroID si deseas asociarlo a un tablero específico.'
+    message: 'Ingreso creado. Asigna un presupuestoID si deseas asociarlo a un tablero específico.'
   });
 });
 
@@ -184,7 +184,7 @@ exports.updateIncome = asyncHandler(async (req, res, next) => {
     });
   }
 
-  const oldTableroID = income.tableroID;
+  const oldPresupuestoID = income.presupuestoID;
 
   income = await Income.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
@@ -192,13 +192,13 @@ exports.updateIncome = asyncHandler(async (req, res, next) => {
   });
 
   // Recalcular totales de tableros afectados
-  if (oldTableroID) {
-    const oldBoard = await FinancialBoard.findById(oldTableroID);
+  if (oldPresupuestoID) {
+    const oldBoard = await Presupuesto.findById(oldPresupuestoID);
     if (oldBoard) await oldBoard.recalcularTotales();
   }
 
-  if (income.tableroID && income.tableroID.toString() !== oldTableroID?.toString()) {
-    const newBoard = await FinancialBoard.findById(income.tableroID);
+  if (income.presupuestoID && income.presupuestoID.toString() !== oldPresupuestoID?.toString()) {
+    const newBoard = await Presupuesto.findById(income.presupuestoID);
     if (newBoard) await newBoard.recalcularTotales();
   }
 
@@ -232,14 +232,14 @@ exports.deleteIncome = asyncHandler(async (req, res, next) => {
     });
   }
 
-  const tableroID = income.tableroID;
+  const presupuestoID = income.presupuestoID;
 
   await income.deleteOne();
 
   // Recalcular totales del tablero si tenía uno asignado
-  if (tableroID) {
-    const board = await FinancialBoard.findById(tableroID);
-    if (board) await board.recalcularTotales();
+  if (presupuestoID) {
+    const presupuesto = await Presupuesto.findById(presupuestoID);
+    if (presupuesto) await presupuesto.recalcularTotales();
   }
 
   res.status(200).json({

@@ -517,10 +517,18 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v1/accounts",
+							"raw": "{{base_url}}/api/v1/accounts?perfilID={{profile_id}}",
 							"host": ["{{base_url}}"],
-							"path": ["api", "v1", "accounts"]
-						}
+							"path": ["api", "v1", "accounts"],
+							"query": [
+								{
+									"key": "perfilID",
+									"value": "{{profile_id}}",
+									"description": "ID del perfil (requerido)"
+								}
+							]
+						},
+						"description": "Obtiene todas las cuentas de un perfil. Requiere perfilID en query."
 					}
 				},
 				{
@@ -539,7 +547,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"nombre\": \"Cuenta Corriente\",\n  \"tipo\": \"corriente\",\n  \"banco\": \"Banco de Chile\",\n  \"numero\": \"1234567890\",\n  \"saldoInicial\": 1000000,\n  \"moneda\": \"CLP\"\n}"
+							"raw": "{\n  \"perfilID\": \"{{profile_id}}\",\n  \"nombre\": \"Cuenta Corriente\",\n  \"tipoCuenta\": \"Corriente\",\n  \"banco\": \"Banco de Chile\",\n  \"saldoDisponible\": 1000000,\n  \"moneda\": \"CLP\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/accounts",
@@ -1213,6 +1221,1177 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Level 3 - Assets",
+			"item": [
+				{
+					"name": "Get All Assets",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/assets?perfilID={{profile_id}}&tipo=Propiedades",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assets"],
+							"query": [
+								{
+									"key": "perfilID",
+									"value": "{{profile_id}}"
+								},
+								{
+									"key": "tipo",
+									"value": "Propiedades",
+									"description": "Filtrar por tipo: Propiedades, Vehículos, Inversiones, Efectivo, Otros"
+								}
+							]
+						},
+						"description": "Obtiene todos los activos de un perfil. Puede filtrar por tipo."
+					}
+				},
+				{
+					"name": "Create Asset (Propiedad)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"perfilID\": \"{{profile_id}}\",\n  \"tipo\": \"Propiedades\",\n  \"valor\": 192400000,\n  \"moneda\": \"CLP\",\n  \"fecha\": \"2021-01-15\",\n  \"descripcion\": \"Depto Principal\",\n  \"rol\": \"02524-00179\",\n  \"direccion\": \"AV AMERICA 755 DP 706\",\n  \"comuna\": \"SAN BERNARDO\",\n  \"avaluoFiscal\": 65656813,\n  \"valorComercial\": 192400000,\n  \"grupoPropiedad\": \"depto-america-755\",\n  \"tipoPropiedad\": \"Depto\",\n  \"metrosTotales\": 89.94,\n  \"metrosConstruidos\": 79.7,\n  \"numeroDormitorios\": 3,\n  \"numeroBanos\": 2,\n  \"numeroEstacionamientos\": 1,\n  \"piso\": 7\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/assets",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assets"]
+						},
+						"description": "Crea un nuevo activo (propiedad). Incluye todos los campos nuevos: tipoPropiedad, metros, dormitorios, baños, etc."
+					}
+				},
+				{
+					"name": "Create Asset (Vehículo)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"perfilID\": \"{{profile_id}}\",\n  \"tipo\": \"Vehículos\",\n  \"valor\": 15000000,\n  \"moneda\": \"CLP\",\n  \"fecha\": \"2020-01-15\",\n  \"descripcion\": \"Toyota Corolla 2020\",\n  \"marca\": \"Toyota\",\n  \"modelo\": \"Corolla\",\n  \"año\": 2020,\n  \"kilometraje\": 50000,\n  \"patente\": \"ABCD12\",\n  \"color\": \"Blanco\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/assets",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assets"]
+						},
+						"description": "Crea un nuevo activo (vehículo). Incluye marca, modelo, año, kilometraje, patente, color."
+					}
+				},
+				{
+					"name": "Get Asset by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/assets/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assets", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{asset_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Asset",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"valorComercial\": 200000000\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/assets/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assets", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{asset_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Asset",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/assets/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assets", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{asset_id}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 3 - Asset Valuations",
+			"item": [
+				{
+					"name": "Get Asset Valuations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/assets/:assetId/valuations",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assets", ":assetId", "valuations"],
+							"variable": [
+								{
+									"key": "assetId",
+									"value": "{{asset_id}}"
+								}
+							]
+						},
+						"description": "Obtiene todas las tasaciones de un activo."
+					}
+				},
+				{
+					"name": "Get Asset Valuation History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/assets/:assetId/valuations/history",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assets", ":assetId", "valuations", "history"],
+							"variable": [
+								{
+									"key": "assetId",
+									"value": "{{asset_id}}"
+								}
+							]
+						},
+						"description": "Obtiene el historial completo de evolución de valor de un activo con resumen de apreciación/depreciación."
+					}
+				},
+				{
+					"name": "Create Asset Valuation (UF)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fecha\": \"2021-01-15\",\n  \"valorUF\": 4444,\n  \"valorUFEnCLP\": 35000,\n  \"tipoTasacion\": \"Compra\",\n  \"institucion\": \"Vendedor\",\n  \"observaciones\": \"Compra inicial - Precio total del conjunto\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/assets/:assetId/valuations",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assets", ":assetId", "valuations"],
+							"variable": [
+								{
+									"key": "assetId",
+									"value": "{{asset_id}}"
+								}
+							]
+						},
+						"description": "Crea una nueva tasación usando UF. El sistema calcula automáticamente el valorCLP = valorUF * valorUFEnCLP."
+					}
+				},
+				{
+					"name": "Create Asset Valuation (CLP Directo)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fecha\": \"2024-01-15\",\n  \"valorDirectoCLP\": 8000000,\n  \"tipoTasacion\": \"Tasación Comercial\",\n  \"institucion\": \"Tasador Independiente\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/assets/:assetId/valuations",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assets", ":assetId", "valuations"],
+							"variable": [
+								{
+									"key": "assetId",
+									"value": "{{asset_id}}"
+								}
+							]
+						},
+						"description": "Crea una nueva tasación usando valor directo en CLP (útil para vehículos)."
+					}
+				},
+				{
+					"name": "Get Valuation by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/assets/valuations/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assets", "valuations", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{valuation_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Valuation",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"observaciones\": \"Tasación actualizada\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/assets/valuations/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assets", "valuations", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{valuation_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Valuation",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/assets/valuations/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assets", "valuations", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{valuation_id}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 3 - Debts",
+			"item": [
+				{
+					"name": "Get All Debts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/debts?perfilID={{profile_id}}&estado=Activa",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "debts"],
+							"query": [
+								{
+									"key": "perfilID",
+									"value": "{{profile_id}}"
+								},
+								{
+									"key": "estado",
+									"value": "Activa",
+									"description": "Filtrar por estado: Activa, Pagada, Vencida"
+								},
+								{
+									"key": "tipo",
+									"value": "Bancaria",
+									"description": "Filtrar por tipo: Personal, Institucional, Bancaria, Comercial",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Obtiene todas las deudas de un perfil. Puede filtrar por estado y tipo."
+					}
+				},
+				{
+					"name": "Get Debt Level",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/debts/level?perfilID={{profile_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "debts", "level"],
+							"query": [
+								{
+									"key": "perfilID",
+									"value": "{{profile_id}}"
+								},
+								{
+									"key": "monthlyIncome",
+									"value": "",
+									"description": "Ingresos mensuales (opcional, se calcula automáticamente si no se proporciona)",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Obtiene el nivel de deuda del perfil (1=Saludable, 2=Controlada, 3=En Riesgo, 4=Crítica) basado en estado de pago y ratio deuda/ingresos."
+					}
+				},
+				{
+					"name": "Get Debts Summary",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/debts/summary?perfilID={{profile_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "debts", "summary"],
+							"query": [
+								{
+									"key": "perfilID",
+									"value": "{{profile_id}}"
+								}
+							]
+						},
+						"description": "Obtiene un resumen completo de deudas con totales, estadísticas y próximos vencimientos."
+					}
+				},
+				{
+					"name": "Create Debt (Hipotecario)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"perfilID\": \"{{profile_id}}\",\n  \"nombre\": \"Crédito Hipotecario - Depto\",\n  \"tipo\": \"Bancaria\",\n  \"categoria\": \"Hipotecario\",\n  \"prestador\": \"Santander Chile\",\n  \"montoTotal\": 117480402,\n  \"numeroCuotas\": 300,\n  \"moneda\": \"UF\",\n  \"saldoPendiente\": 108518513,\n  \"tasaInteres\": 0.00316,\n  \"fechaInicio\": \"2022-04-26\",\n  \"fechaVencimiento\": \"2047-07-01\",\n  \"estado\": \"Activa\",\n  \"descripcion\": \"Crédito hipotecario para compra de depto\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/debts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "debts"]
+						},
+						"description": "Crea una nueva deuda. El sistema calcula automáticamente montoCuota = montoTotal / numeroCuotas."
+					}
+				},
+				{
+					"name": "Create Debt (TC - Revolving)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"perfilID\": \"{{profile_id}}\",\n  \"nombre\": \"Tarjeta de Crédito Scotiabank\",\n  \"tipo\": \"Bancaria\",\n  \"categoria\": \"TC\",\n  \"prestador\": \"Scotiabank Chile\",\n  \"abonoMensual\": 100000,\n  \"moneda\": \"CLP\",\n  \"saldoPendiente\": 2000000,\n  \"estado\": \"Activa\",\n  \"descripcion\": \"Tarjeta de crédito revolving\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/debts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "debts"]
+						},
+						"description": "Crea una deuda con abono mensual (sin monto total). Útil para tarjetas de crédito revolving."
+					}
+				},
+				{
+					"name": "Get Debt by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/debts/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "debts", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{debt_id}}"
+								}
+							]
+						},
+						"description": "Obtiene una deuda específica con sus pagos asociados."
+					}
+				},
+				{
+					"name": "Pay Debt",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"monto\": 391601,\n  \"fecha\": \"2024-12-01\",\n  \"numeroCuota\": 43\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/debts/:id/pay",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "debts", ":id", "pay"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{debt_id}}"
+								}
+							]
+						},
+						"description": "Registra un pago de deuda. Actualiza automáticamente saldoPendiente y saldoPagado."
+					}
+				},
+				{
+					"name": "Update Debt",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"saldoPendiente\": 108000000\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/debts/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "debts", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{debt_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Debt",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/debts/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "debts", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{debt_id}}"
+								}
+							]
+						},
+						"description": "Elimina una deuda. También elimina todos los pagos asociados."
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 3 - Payments",
+			"item": [
+				{
+					"name": "Get All Payments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/payments?perfilID={{profile_id}}&deudaID={{debt_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "payments"],
+							"query": [
+								{
+									"key": "perfilID",
+									"value": "{{profile_id}}"
+								},
+								{
+									"key": "deudaID",
+									"value": "{{debt_id}}",
+									"description": "Filtrar por deuda específica",
+									"disabled": true
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"deudaID\": \"{{debt_id}}\",\n  \"perfilID\": \"{{profile_id}}\",\n  \"monto\": 391601,\n  \"fecha\": \"2024-12-01\",\n  \"estado\": \"pagado\",\n  \"numeroCuota\": 43\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/payments",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "payments"]
+						},
+						"description": "Crea un nuevo pago. Actualiza automáticamente los saldos de la deuda."
+					}
+				},
+				{
+					"name": "Get Payment by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/payments/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "payments", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{payment_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Payment",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"monto\": 400000\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/payments/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "payments", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{payment_id}}"
+								}
+							]
+						},
+						"description": "Actualiza un pago. Recalcula automáticamente los saldos de la deuda."
+					}
+				},
+				{
+					"name": "Delete Payment",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/payments/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "payments", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{payment_id}}"
+								}
+							]
+						},
+						"description": "Elimina un pago. Recalcula automáticamente los saldos de la deuda."
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 3 - Financial Boards",
+			"item": [
+				{
+					"name": "Get All Financial Boards",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/financial-boards?perfilID={{profile_id}}&año=2025&mes=12",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "financial-boards"],
+							"query": [
+								{
+									"key": "perfilID",
+									"value": "{{profile_id}}"
+								},
+								{
+									"key": "año",
+									"value": "2025"
+								},
+								{
+									"key": "mes",
+									"value": "12"
+								}
+							]
+						},
+						"description": "Obtiene todos los tableros financieros de un perfil. Puede filtrar por año y mes."
+					}
+				},
+				{
+					"name": "Create Financial Board",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"perfilID\": \"{{profile_id}}\",\n  \"nombre\": \"Depto\",\n  \"moneda\": \"CLP\",\n  \"año\": 2025,\n  \"mes\": 12,\n  \"porcentajeIngresos\": 100,\n  \"color\": \"#3B82F6\",\n  \"icono\": \"home\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/financial-boards",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "financial-boards"]
+						},
+						"description": "Crea un nuevo tablero financiero. Crea automáticamente 3 reglas por defecto (50-30-20) si no existen."
+					}
+				},
+				{
+					"name": "Get Financial Board by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/financial-boards/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "financial-boards", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{board_id}}"
+								}
+							]
+						},
+						"description": "Obtiene un tablero financiero específico con sus ingresos y gastos detallados."
+					}
+				},
+				{
+					"name": "Update Financial Board",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Depto Actualizado\",\n  \"color\": \"#10B981\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/financial-boards/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "financial-boards", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{board_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Financial Board",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/financial-boards/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "financial-boards", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{board_id}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 3 - Incomes",
+			"item": [
+				{
+					"name": "Get All Incomes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/incomes?perfilID={{profile_id}}&tableroID={{board_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "incomes"],
+							"query": [
+								{
+									"key": "perfilID",
+									"value": "{{profile_id}}"
+								},
+								{
+									"key": "tableroID",
+									"value": "{{board_id}}",
+									"description": "Filtrar por tablero específico",
+									"disabled": true
+								},
+								{
+									"key": "tipo",
+									"value": "recurrente",
+									"description": "Filtrar por tipo: recurrente, ocasional",
+									"disabled": true
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Income",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"perfilID\": \"{{profile_id}}\",\n  \"tableroID\": \"{{board_id}}\",\n  \"glosa\": \"Sueldo Mensual\",\n  \"monto\": 3000000,\n  \"fecha\": \"2025-12-01\",\n  \"tipo\": \"recurrente\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/incomes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "incomes"]
+						},
+						"description": "Crea un nuevo ingreso. Si tiene tableroID, se asocia directamente al tablero."
+					}
+				},
+				{
+					"name": "Get Income by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/incomes/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "incomes", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{income_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Income",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"monto\": 3200000\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/incomes/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "incomes", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{income_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Income",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/incomes/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "incomes", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{income_id}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Level 3 - Rules",
+			"item": [
+				{
+					"name": "Get All Rules",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/rules?tableroID={{board_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "rules"],
+							"query": [
+								{
+									"key": "tableroID",
+									"value": "{{board_id}}"
+								}
+							]
+						},
+						"description": "Obtiene todas las reglas de un tablero financiero."
+					}
+				},
+				{
+					"name": "Create Rule",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tableroID\": \"{{board_id}}\",\n  \"porcentaje\": 50,\n  \"nombre\": \"Gastos Esenciales\",\n  \"color\": \"#10B981\",\n  \"icono\": \"home\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/rules",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "rules"]
+						},
+						"description": "Crea una nueva regla de presupuesto. Máximo 4 reglas por tablero."
+					}
+				},
+				{
+					"name": "Get Rule by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/rules/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "rules", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{rule_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Rule",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"porcentaje\": 55,\n  \"nombre\": \"Gastos Esenciales Actualizado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/rules/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "rules", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{rule_id}}"
+								}
+							]
+						},
+						"description": "Actualiza una regla. Recalcula automáticamente el presupuesto basado en el porcentaje."
+					}
+				},
+				{
+					"name": "Delete Rule",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/rules/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "rules", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{rule_id}}"
+								}
+							]
+						},
+						"description": "Elimina una regla. Debe haber al menos 2 reglas por tablero."
+					}
+				}
+			]
 		}
 	],
 	"variable": [
@@ -1285,6 +2464,48 @@
 			"key": "transaction_id",
 			"value": "",
 			"type": "string"
+		},
+		{
+			"key": "asset_id",
+			"value": "",
+			"type": "string",
+			"description": "ID de un activo (propiedad, vehículo, etc.)"
+		},
+		{
+			"key": "valuation_id",
+			"value": "",
+			"type": "string",
+			"description": "ID de una tasación de activo"
+		},
+		{
+			"key": "debt_id",
+			"value": "",
+			"type": "string",
+			"description": "ID de una deuda"
+		},
+		{
+			"key": "payment_id",
+			"value": "",
+			"type": "string",
+			"description": "ID de un pago"
+		},
+		{
+			"key": "board_id",
+			"value": "",
+			"type": "string",
+			"description": "ID de un tablero financiero"
+		},
+		{
+			"key": "income_id",
+			"value": "",
+			"type": "string",
+			"description": "ID de un ingreso"
+		},
+		{
+			"key": "rule_id",
+			"value": "",
+			"type": "string",
+			"description": "ID de una regla de presupuesto"
 		}
 	]
 }

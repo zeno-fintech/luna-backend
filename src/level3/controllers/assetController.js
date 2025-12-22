@@ -255,3 +255,84 @@ exports.deleteAsset = asyncHandler(async (req, res, next) => {
   });
 });
 
+/**
+ * Obtiene el totalizador de activos
+ * 
+ * @route GET /api/v1/assets/totalizador?perfilID=xxx
+ * @access Private (requiere autenticación)
+ */
+exports.getTotalizador = asyncHandler(async (req, res, next) => {
+  const { perfilID } = req.query;
+
+  if (!perfilID) {
+    return res.status(400).json({
+      success: false,
+      message: 'perfilID es requerido'
+    });
+  }
+
+  // Validar propiedad del perfil
+  if (!(await validateProfileOwnership(req.user.id, perfilID))) {
+    return res.status(403).json({
+      success: false,
+      message: 'No tienes acceso a este perfil'
+    });
+  }
+
+  const assets = await Asset.find({ perfilID });
+
+  // Agrupar por tipo
+  const totalPorTipo = {};
+  const totalGeneral = assets.reduce((sum, asset) => {
+    if (!totalPorTipo[asset.tipo]) {
+      totalPorTipo[asset.tipo] = {
+        cantidad: 0,
+        valorTotal: 0,
+        activos: []
+      };
+    }
+    totalPorTipo[asset.tipo].cantidad += 1;
+    totalPorTipo[asset.tipo].valorTotal += asset.valor;
+    totalPorTipo[asset.tipo].activos.push({
+      id: asset._id,
+      nombre: asset.descripcion || asset.tipo,
+      valor: asset.valor,
+      moneda: asset.moneda
+    });
+    return sum + asset.valor;
+  }, 0);
+
+  // Agrupar por categoría (Líquidos, Inversiones, Bienes Raíces, Vehículos, Otros)
+  const categorias = {
+    'Líquidos': ['Efectivo', 'Cuenta Corriente', 'Cuenta Ahorro', 'Fondo Mutuo Corto Plazo'],
+    'Inversiones': ['Acciones', 'Bonos', 'Fondo Mutuo', 'Criptomonedas', 'Depósito a Plazo'],
+    'Bienes Raíces': ['Casa Propia', 'Departamento', 'Terreno', 'Propiedad Inversión'],
+    'Vehículos': ['Auto', 'Moto'],
+    'Otros': ['Joyas', 'Obras de Arte', 'Equipamiento', 'Otros']
+  };
+
+  const totalPorCategoria = {};
+  Object.keys(categorias).forEach(categoria => {
+    totalPorCategoria[categoria] = {
+      cantidad: 0,
+      valorTotal: 0
+    };
+    categorias[categoria].forEach(tipo => {
+      if (totalPorTipo[tipo]) {
+        totalPorCategoria[categoria].cantidad += totalPorTipo[tipo].cantidad;
+        totalPorCategoria[categoria].valorTotal += totalPorTipo[tipo].valorTotal;
+      }
+    });
+  });
+
+  res.status(200).json({
+    success: true,
+    data: {
+      totalGeneral,
+      totalPorTipo,
+      totalPorCategoria,
+      cantidadTotal: assets.length
+    }
+  });
+});
+

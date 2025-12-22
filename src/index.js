@@ -26,6 +26,7 @@ const accountRoutes = require('@level3/routes/accounts');
 const debtRoutes = require('@level3/routes/debts');
 const paymentRoutes = require('@level3/routes/payments');
 const financialBoardRoutes = require('@level3/routes/financialBoards');
+const presupuestoRoutes = require('@level3/routes/presupuestos');
 const incomeRoutes = require('@level3/routes/incomes');
 const categoryRoutes = require('@level3/routes/categories');
 const ruleRoutes = require('@level3/routes/rules');
@@ -150,15 +151,16 @@ app.get('/api/v1', (req, res) => {
         update: '/api/v1/payments/:id',
         delete: '/api/v1/payments/:id'
       },
-      financialBoards: {
-        list: '/api/v1/financial-boards?perfilID=xxx&año=2024&mes=1',
-        detail: '/api/v1/financial-boards/:id',
-        create: '/api/v1/financial-boards',
-        update: '/api/v1/financial-boards/:id',
-        delete: '/api/v1/financial-boards/:id'
+      presupuestos: {
+        list: '/api/v1/presupuestos?perfilID=xxx&año=2024&mes=1',
+        detail: '/api/v1/presupuestos/:id',
+        create: '/api/v1/presupuestos',
+        update: '/api/v1/presupuestos/:id',
+        delete: '/api/v1/presupuestos/:id',
+        totalizador: '/api/v1/presupuestos/totalizador?perfilID=xxx'
       },
       incomes: {
-        list: '/api/v1/incomes?perfilID=xxx&tableroID=xxx&tipo=recurrente',
+        list: '/api/v1/incomes?perfilID=xxx&presupuestoID=xxx&tipo=recurrente',
         detail: '/api/v1/incomes/:id',
         create: '/api/v1/incomes',
         update: '/api/v1/incomes/:id',
@@ -172,7 +174,7 @@ app.get('/api/v1', (req, res) => {
         delete: '/api/v1/categories/:id'
       },
       rules: {
-        list: '/api/v1/rules?tableroID=xxx',
+        list: '/api/v1/rules?presupuestoID=xxx',
         detail: '/api/v1/rules/:id',
         create: '/api/v1/rules',
         update: '/api/v1/rules/:id',
@@ -201,7 +203,7 @@ app.get('/api/v1', (req, res) => {
       },
       aiSuggestions: {
         suggestBoardIcon: '/api/v1/ai/suggest-board-icon?nombre=Casa',
-        suggestFixedExpenses: '/api/v1/ai/suggest-fixed-expenses?perfilID=xxx&tableroID=xxx'
+        suggestFixedExpenses: '/api/v1/ai/suggest-fixed-expenses?perfilID=xxx&presupuestoID=xxx'
       },
       countries: {
         list: '/api/v1/countries?region=Sudamérica',
@@ -237,7 +239,8 @@ app.use('/api/v1/profiles', profileRoutes);
 app.use('/api/v1/accounts', accountRoutes);
 app.use('/api/v1/debts', debtRoutes);
 app.use('/api/v1/payments', paymentRoutes);
-app.use('/api/v1/financial-boards', financialBoardRoutes);
+// app.use('/api/v1/financial-boards', financialBoardRoutes); // Deprecado - usar /api/v1/presupuestos
+app.use('/api/v1/presupuestos', presupuestoRoutes);
 app.use('/api/v1/incomes', incomeRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/rules', ruleRoutes);

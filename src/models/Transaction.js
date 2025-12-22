@@ -24,10 +24,10 @@ const transactionSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category'
   },
-  tableroID: {
+  presupuestoID: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'FinancialBoard'
-    // Opcional: si está, el gasto pertenece a un tablero específico
+    ref: 'Presupuesto'
+    // Opcional: si está, el gasto pertenece a un presupuesto específico
   },
   reglaID: {
     type: mongoose.Schema.Types.ObjectId,
@@ -80,7 +80,7 @@ const transactionSchema = new mongoose.Schema({
 // Indexes for better query performance
 transactionSchema.index({ perfilID: 1, fecha: -1 });
 transactionSchema.index({ tipo: 1, fecha: -1 });
-transactionSchema.index({ tableroID: 1 });
+transactionSchema.index({ presupuestoID: 1 });
 transactionSchema.index({ esGastoFijo: 1 });
 
 module.exports = mongoose.model('Transaction', transactionSchema);

@@ -213,11 +213,11 @@ exports.createTransaction = asyncHandler(async (req, res, next) => {
   }
 
   // Actualizar totales del tablero si está asociado
-  if (transaction.tableroID) {
-    const FinancialBoard = require('@models/FinancialBoard');
-    const board = await FinancialBoard.findById(transaction.tableroID);
-    if (board) {
-      await board.recalcularTotales();
+  if (transaction.presupuestoID) {
+    const Presupuesto = require('@models/Presupuesto');
+    const presupuesto = await Presupuesto.findById(transaction.presupuestoID);
+    if (presupuesto) {
+      await presupuesto.recalcularTotales();
     }
   }
 
@@ -367,7 +367,7 @@ exports.updateTransaction = asyncHandler(async (req, res, next) => {
     });
   }
 
-  const oldTableroID = transaction.tableroID;
+  const oldTableroID = transaction.presupuestoID;
 
   // If amount or type changed, update account balance
   if (req.body.monto || req.body.tipo) {
@@ -390,7 +390,7 @@ exports.updateTransaction = asyncHandler(async (req, res, next) => {
     .populate('categoriaID', 'nombre icono color')
     .populate('cuentaID', 'nombre banco tipoCuenta')
     .populate('reglaID', 'nombre color')
-    .populate('tableroID', 'nombre moneda');
+    .populate('presupuestoID', 'nombre moneda');
 
   // Update new account balance
   if (transaction.cuentaID) {
@@ -406,13 +406,13 @@ exports.updateTransaction = asyncHandler(async (req, res, next) => {
   }
 
   // Actualizar totales de tableros afectados
-  const FinancialBoard = require('@models/FinancialBoard');
+  const Presupuesto = require('@models/Presupuesto');
   if (oldTableroID) {
-    const oldBoard = await FinancialBoard.findById(oldTableroID);
+    const oldBoard = await Presupuesto.findById(oldTableroID);
     if (oldBoard) await oldBoard.recalcularTotales();
   }
-  if (transaction.tableroID && transaction.tableroID.toString() !== oldTableroID?.toString()) {
-    const newBoard = await FinancialBoard.findById(transaction.tableroID);
+  if (transaction.presupuestoID && transaction.presupuestoID.toString() !== oldTableroID?.toString()) {
+    const newBoard = await Presupuesto.findById(transaction.presupuestoID);
     if (newBoard) await newBoard.recalcularTotales();
   }
 
@@ -468,7 +468,7 @@ exports.deleteTransaction = asyncHandler(async (req, res, next) => {
     });
   }
 
-  const tableroID = transaction.tableroID;
+  const presupuestoID = transaction.presupuestoID;
 
   // Revert account balance
   if (transaction.cuentaID) {
@@ -486,10 +486,10 @@ exports.deleteTransaction = asyncHandler(async (req, res, next) => {
   await transaction.deleteOne();
 
   // Actualizar totales del tablero si estaba asociado
-  if (tableroID) {
-    const FinancialBoard = require('@models/FinancialBoard');
-    const board = await FinancialBoard.findById(tableroID);
-    if (board) await board.recalcularTotales();
+  if (presupuestoID) {
+    const Presupuesto = require('@models/Presupuesto');
+    const presupuesto = await Presupuesto.findById(presupuestoID);
+    if (presupuesto) await presupuesto.recalcularTotales();
   }
 
   // Actualizar regla si el gasto tenía reglaID

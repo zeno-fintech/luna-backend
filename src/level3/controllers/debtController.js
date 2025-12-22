@@ -556,3 +556,78 @@ exports.getDebtLevel = asyncHandler(async (req, res, next) => {
   });
 });
 
+/**
+ * Obtiene el totalizador de deudas
+ * 
+ * @route GET /api/v1/debts/totalizador?perfilID=xxx
+ * @access Private (requiere autenticación)
+ */
+exports.getTotalizador = asyncHandler(async (req, res, next) => {
+  const { perfilID } = req.query;
+
+  if (!perfilID) {
+    return res.status(400).json({
+      success: false,
+      message: 'perfilID es requerido'
+    });
+  }
+
+  // Validar propiedad del perfil
+  if (!(await validateProfileOwnership(req.user.id, perfilID))) {
+    return res.status(403).json({
+      success: false,
+      message: 'No tienes acceso a este perfil'
+    });
+  }
+
+  const debts = await Debt.find({ perfilID });
+
+  // Agrupar por categoría
+  const totalPorCategoria = {};
+  const totalGeneral = debts.reduce((sum, debt) => {
+    const categoria = debt.categoria || 'Otro';
+    if (!totalPorCategoria[categoria]) {
+      totalPorCategoria[categoria] = {
+        cantidad: 0,
+        montoTotal: 0,
+        saldoPendiente: 0,
+        saldoPagado: 0,
+        deudas: []
+      };
+    }
+    totalPorCategoria[categoria].cantidad += 1;
+    totalPorCategoria[categoria].montoTotal += debt.montoTotal || 0;
+    totalPorCategoria[categoria].saldoPendiente += debt.saldoPendiente || 0;
+    totalPorCategoria[categoria].saldoPagado += debt.saldoPagado || 0;
+    totalPorCategoria[categoria].deudas.push({
+      id: debt._id,
+      nombre: debt.nombre,
+      prestador: debt.prestador,
+      montoTotal: debt.montoTotal,
+      saldoPendiente: debt.saldoPendiente,
+      estado: debt.estado
+    });
+    return sum + (debt.saldoPendiente || 0);
+  }, 0);
+
+  // Agrupar por estado
+  const totalPorEstado = {
+    Activa: debts.filter(d => d.estado === 'Activa').reduce((sum, d) => sum + (d.saldoPendiente || 0), 0),
+    Pagada: debts.filter(d => d.estado === 'Pagada').reduce((sum, d) => sum + (d.saldoPagado || 0), 0),
+    Vencida: debts.filter(d => d.estado === 'Vencida').reduce((sum, d) => sum + (d.saldoPendiente || 0), 0)
+  };
+
+  res.status(200).json({
+    success: true,
+    data: {
+      totalGeneral,
+      totalPorCategoria,
+      totalPorEstado,
+      cantidadTotal: debts.length,
+      cantidadActivas: debts.filter(d => d.estado === 'Activa').length,
+      cantidadPagadas: debts.filter(d => d.estado === 'Pagada').length,
+      cantidadVencidas: debts.filter(d => d.estado === 'Vencida').length
+    }
+  });
+});
+

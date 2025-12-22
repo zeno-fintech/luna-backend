@@ -141,12 +141,12 @@ exports.analyzeSpendingPatterns = async (userId, transactions) => {
 };
 
 /**
- * Sugiere un icono basado en el nombre del tablero financiero
+ * Sugiere un icono basado en el nombre del presupuesto financiero
  * 
- * Analiza el nombre del tablero y sugiere un icono apropiado.
+ * Analiza el nombre del presupuesto y sugiere un icono apropiado.
  * Por ejemplo: "Casa" → "home", "Depto" → "building", "Auto" → "car", etc.
  * 
- * @param {string} nombreTablero - Nombre del tablero financiero
+ * @param {string} nombreTablero - Nombre del presupuesto financiero
  * @returns {Promise<string>} Nombre del icono sugerido (ej: "home", "building", "car")
  * 
  * @example
@@ -223,14 +223,14 @@ exports.suggestBoardIcon = async (nombreTablero) => {
  * marcarse como fijos si se repiten 2-3 meses consecutivos.
  * 
  * @param {string} perfilID - ID del perfil
- * @param {string} [tableroID] - ID del tablero (opcional)
+ * @param {string} [presupuestoID] - ID del presupuesto (opcional)
  * @returns {Promise<Array>} Array de transacciones sugeridas para marcar como fijas
  * 
  * @example
  * const sugerencias = await suggestFixedExpenses("507f1f77bcf86cd799439011");
  * // Retorna: [{ transactionId: "...", detalle: "Internet", mesesRepetidos: 3, ... }]
  */
-exports.suggestFixedExpenses = async (perfilID, tableroID = null) => {
+exports.suggestFixedExpenses = async (perfilID, presupuestoID = null) => {
   const Transaction = require('@models/Transaction');
   
   // Obtener gastos de los últimos 3 meses
@@ -244,8 +244,8 @@ exports.suggestFixedExpenses = async (perfilID, tableroID = null) => {
     fecha: { $gte: threeMonthsAgo }
   };
   
-  if (tableroID) {
-    query.tableroID = tableroID;
+  if (presupuestoID) {
+    query.presupuestoID = presupuestoID;
   }
   
   const gastos = await Transaction.find(query)

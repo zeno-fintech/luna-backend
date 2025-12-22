@@ -8,8 +8,18 @@ const savingsSchema = new mongoose.Schema({
   },
   tipo: {
     type: String,
-    enum: ['Ahorro', 'Inversión'],
+    enum: [
+      'Fondo de Emergencia',
+      'Ahorro Objetivo',
+      'Inversión',
+      'Prepago de Deudas',
+      'Otro'
+    ],
     required: true
+  },
+  fechaObjetivo: {
+    type: Date
+    // Fecha objetivo para ahorro (opcional)
   },
   monto: {
     type: Number,

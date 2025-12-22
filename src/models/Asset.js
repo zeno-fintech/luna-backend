@@ -8,8 +8,24 @@ const assetSchema = new mongoose.Schema({
   },
   tipo: {
     type: String,
-    enum: ['Efectivo', 'Inversiones', 'Propiedades', 'Vehículos', 'Otros'],
+    enum: [
+      // Líquidos
+      'Efectivo', 'Cuenta Corriente', 'Cuenta Ahorro', 'Fondo Mutuo Corto Plazo',
+      // Inversiones
+      'Acciones', 'Bonos', 'Fondo Mutuo', 'Criptomonedas', 'Depósito a Plazo',
+      // Bienes Raíces
+      'Casa Propia', 'Departamento', 'Terreno', 'Propiedad Inversión',
+      // Vehículos
+      'Auto', 'Moto',
+      // Otros
+      'Joyas', 'Obras de Arte', 'Equipamiento', 'Otros'
+    ],
     required: true
+  },
+  presupuestoID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Presupuesto'
+    // Opcional: asociar activo a un presupuesto específico
   },
   valor: {
     type: Number,
@@ -145,6 +161,7 @@ const assetSchema = new mongoose.Schema({
 // Indexes para búsquedas eficientes
 assetSchema.index({ perfilID: 1 });
 assetSchema.index({ perfilID: 1, tipo: 1 });
+assetSchema.index({ presupuestoID: 1 });
 assetSchema.index({ grupoPropiedad: 1 });
 assetSchema.index({ rol: 1 });
 

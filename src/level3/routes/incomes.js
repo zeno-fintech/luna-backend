@@ -36,10 +36,10 @@ router.use(authorize('USER'));
  *           type: string
  *         description: Filtrar por perfil
  *       - in: query
- *         name: tableroID
+ *         name: presupuestoID
  *         schema:
  *           type: string
- *         description: Filtrar por tablero financiero
+ *         description: Filtrar por presupuesto
  *       - in: query
  *         name: tipo
  *         schema:
@@ -79,9 +79,9 @@ router.use(authorize('USER'));
  *                 type: string
  *                 enum: [recurrente, ocasional]
  *                 example: recurrente
- *               tableroID:
+ *               presupuestoID:
  *                 type: string
- *                 description: ID del tablero financiero asociado
+ *                 description: ID del presupuesto asociado
  *               perfilID:
  *                 type: string
  *     responses:

@@ -1,6 +1,6 @@
 const asyncHandler = require('@core/utils/asyncHandler');
 const Rule = require('@models/Rule');
-const FinancialBoard = require('@models/FinancialBoard');
+const Presupuesto = require('@models/Presupuesto');
 const Profile = require('@models/Profile');
 
 /**
@@ -17,38 +17,38 @@ const validateProfileOwnership = async (userId, profileId) => {
 };
 
 /**
- * Obtiene todas las reglas de un tablero financiero
+ * Obtiene todas las reglas de un presupuesto
  * 
- * @route GET /api/v1/rules?tableroID=xxx
+ * @route GET /api/v1/rules?presupuestoID=xxx
  * @access Private (requiere autenticación)
  */
 exports.getRules = asyncHandler(async (req, res, next) => {
-  const { tableroID } = req.query;
+  const { presupuestoID } = req.query;
 
-  if (!tableroID) {
+  if (!presupuestoID) {
     return res.status(400).json({
       success: false,
-      message: 'tableroID es requerido'
+      message: 'presupuestoID es requerido'
     });
   }
 
-  // Validar que el tablero existe y pertenece al usuario
-  const board = await FinancialBoard.findById(tableroID);
-  if (!board) {
+  // Validar que el presupuesto existe y pertenece al usuario
+  const presupuesto = await Presupuesto.findById(presupuestoID);
+  if (!presupuesto) {
     return res.status(404).json({
       success: false,
-      message: 'Tablero financiero no encontrado'
+      message: 'Presupuesto no encontrado'
     });
   }
 
-  if (!(await validateProfileOwnership(req.user.id, board.perfilID))) {
+  if (!(await validateProfileOwnership(req.user.id, presupuesto.perfilID))) {
     return res.status(403).json({
       success: false,
-      message: 'No tienes acceso a este tablero'
+      message: 'No tienes acceso a este presupuesto'
     });
   }
 
-  const rules = await Rule.find({ tableroID })
+  const rules = await Rule.find({ presupuestoID })
     .sort({ porcentaje: -1 });
 
   // Calcular total de porcentajes
@@ -74,7 +74,7 @@ exports.getRules = asyncHandler(async (req, res, next) => {
  */
 exports.getRule = asyncHandler(async (req, res, next) => {
   const rule = await Rule.findById(req.params.id)
-    .populate('tableroID', 'nombre moneda');
+    .populate('presupuestoID', 'nombre moneda');
 
   if (!rule) {
     return res.status(404).json({
@@ -105,38 +105,38 @@ exports.getRule = asyncHandler(async (req, res, next) => {
  * @access Private (requiere autenticación)
  */
 exports.createRule = asyncHandler(async (req, res, next) => {
-  const { tableroID, porcentaje, nombre, color, icono, imagen } = req.body;
+  const { presupuestoID, porcentaje, nombre, color, icono, imagen } = req.body;
 
-  if (!tableroID || !porcentaje || !nombre) {
+  if (!presupuestoID || !porcentaje || !nombre) {
     return res.status(400).json({
       success: false,
-      message: 'tableroID, porcentaje y nombre son requeridos'
+      message: 'presupuestoID, porcentaje y nombre son requeridos'
     });
   }
 
-  // Validar que el tablero existe y pertenece al usuario
-  const board = await FinancialBoard.findById(tableroID);
-  if (!board) {
+  // Validar que el presupuesto existe y pertenece al usuario
+  const presupuesto = await Presupuesto.findById(presupuestoID);
+  if (!presupuesto) {
     return res.status(404).json({
       success: false,
-      message: 'Tablero financiero no encontrado'
+      message: 'Presupuesto no encontrado'
     });
   }
 
-  if (!(await validateProfileOwnership(req.user.id, board.perfilID))) {
+  if (!(await validateProfileOwnership(req.user.id, presupuesto.perfilID))) {
     return res.status(403).json({
       success: false,
-      message: 'No tienes acceso a este tablero'
+      message: 'No tienes acceso a este presupuesto'
     });
   }
 
   // Validar cantidad de reglas (mínimo 2, máximo 4)
-  const existingRules = await Rule.find({ tableroID });
+  const existingRules = await Rule.find({ presupuestoID });
   
   if (existingRules.length >= 4) {
     return res.status(400).json({
       success: false,
-      message: 'No se pueden crear más de 4 reglas por tablero'
+      message: 'No se pueden crear más de 4 reglas por presupuesto'
     });
   }
 
@@ -152,7 +152,7 @@ exports.createRule = asyncHandler(async (req, res, next) => {
   }
 
   const rule = await Rule.create({
-    tableroID,
+    presupuestoID,
     porcentaje,
     nombre: nombre.trim(),
     color: color || '#000000',
@@ -163,12 +163,12 @@ exports.createRule = asyncHandler(async (req, res, next) => {
   // Recalcular montos de la regla
   await rule.recalcularMontos();
 
-  // Agregar la regla al tablero
-  board.reglas.push(rule._id);
-  await board.save();
+  // Agregar la regla al presupuesto
+  presupuesto.reglas.push(rule._id);
+  await presupuesto.save();
 
   // Verificar si el total suma 100% después de crear
-  const allRules = await Rule.find({ tableroID });
+  const allRules = await Rule.find({ presupuestoID });
   const finalTotalPorcentaje = allRules.reduce((sum, r) => sum + r.porcentaje, 0);
   const isValid = finalTotalPorcentaje === 100 && allRules.length >= 2 && allRules.length <= 4;
 
@@ -199,9 +199,9 @@ exports.updateRule = asyncHandler(async (req, res, next) => {
     });
   }
 
-  // Validar propiedad del tablero
-  const board = await FinancialBoard.findById(rule.tableroID);
-  if (!(await validateProfileOwnership(req.user.id, board.perfilID))) {
+  // Validar propiedad del presupuesto
+  const presupuesto = await Presupuesto.findById(rule.presupuestoID);
+  if (!(await validateProfileOwnership(req.user.id, presupuesto.perfilID))) {
     return res.status(403).json({
       success: false,
       message: 'No tienes acceso a esta regla'
@@ -211,7 +211,7 @@ exports.updateRule = asyncHandler(async (req, res, next) => {
   // Si se actualiza el porcentaje, validar que no exceda 100%
   if (req.body.porcentaje !== undefined) {
     const existingRules = await Rule.find({ 
-      tableroID: rule.tableroID,
+      presupuestoID: rule.presupuestoID,
       _id: { $ne: rule._id }
     });
     const totalPorcentaje = existingRules.reduce((sum, r) => sum + r.porcentaje, 0);
@@ -234,7 +234,7 @@ exports.updateRule = asyncHandler(async (req, res, next) => {
   await rule.recalcularMontos();
 
   // Verificar si el total suma 100% después de actualizar
-  const allRules = await Rule.find({ tableroID: rule.tableroID });
+  const allRules = await Rule.find({ presupuestoID: rule.presupuestoID });
   const finalTotalPorcentaje = allRules.reduce((sum, r) => sum + r.porcentaje, 0);
   const isValid = finalTotalPorcentaje === 100 && allRules.length >= 2 && allRules.length <= 4;
 
@@ -265,9 +265,9 @@ exports.deleteRule = asyncHandler(async (req, res, next) => {
     });
   }
 
-  // Validar propiedad del tablero
-  const board = await FinancialBoard.findById(rule.tableroID);
-  if (!(await validateProfileOwnership(req.user.id, board.perfilID))) {
+  // Validar propiedad del presupuesto
+  const presupuesto = await Presupuesto.findById(rule.presupuestoID);
+  if (!(await validateProfileOwnership(req.user.id, presupuesto.perfilID))) {
     return res.status(403).json({
       success: false,
       message: 'No tienes acceso a esta regla'
@@ -276,20 +276,20 @@ exports.deleteRule = asyncHandler(async (req, res, next) => {
 
   // Validar que no quede menos de 2 reglas
   const remainingRules = await Rule.find({ 
-    tableroID: rule.tableroID,
+    presupuestoID: rule.presupuestoID,
     _id: { $ne: rule._id }
   });
 
   if (remainingRules.length < 2) {
     return res.status(400).json({
       success: false,
-      message: 'Debe haber al menos 2 reglas por tablero. No se puede eliminar esta regla.'
+      message: 'Debe haber al menos 2 reglas por presupuesto. No se puede eliminar esta regla.'
     });
   }
 
-  // Remover la regla del tablero
-  board.reglas = board.reglas.filter(r => r.toString() !== rule._id.toString());
-  await board.save();
+  // Remover la regla del presupuesto
+  presupuesto.reglas = presupuesto.reglas.filter(r => r.toString() !== rule._id.toString());
+  await presupuesto.save();
 
   await rule.deleteOne();
 

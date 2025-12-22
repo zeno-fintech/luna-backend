@@ -1,5 +1,5 @@
 const Transaction = require('@models/Transaction');
-const FinancialBoard = require('@models/FinancialBoard');
+const Presupuesto = require('@models/Presupuesto');
 
 /**
  * @fileoverview Servicio de Analytics - Proporciona análisis financieros y tendencias
