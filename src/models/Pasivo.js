@@ -1,21 +1,36 @@
 const mongoose = require('mongoose');
 
-const debtSchema = new mongoose.Schema({
+/**
+ * Modelo unificado de Pasivos
+ * Reemplaza: Debt
+ * 
+ * Estructura de Patrimonio:
+ * - Activos: Todo lo que posees
+ * - Pasivos: Todo lo que debes (deudas: personal, institucional, bancaria, comercial)
+ * - Patrimonio Neto = Activos - Pasivos
+ */
+const pasivoSchema = new mongoose.Schema({
   perfilID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Profile',
     required: true
   },
+  
+  // Identificación básica
   nombre: {
     type: String,
-    required: [true, 'El nombre de la deuda es requerido'],
+    required: [true, 'El nombre del pasivo es requerido'],
     trim: true
   },
+  
+  // Tipo de pasivo
   tipo: {
     type: String,
     enum: ['Personal', 'Institucional', 'Bancaria', 'Comercial'],
     required: true
   },
+  
+  // Categoría específica
   categoria: {
     type: String,
     enum: [
@@ -25,25 +40,39 @@ const debtSchema = new mongoose.Schema({
       'Automotriz',
       // Tarjetas de crédito
       'Tarjeta de Crédito',
+      'TC', // Abreviación común
       // Créditos de consumo
-      'Consumo', 'Préstamo Personal', 'Crédito Bancario',
+      'Consumo',
+      'Préstamo Personal',
+      'Crédito Bancario',
       // Deudas con terceros
-      'Deuda Familiar', 'Deuda Amigo',
+      'Deuda Familiar',
+      'Deuda Amigo',
+      'Personal', // Tipo genérico para compatibilidad
       // Otros
-      'Línea de Crédito', 'Comercial', 'Otro'
+      'Línea de Crédito',
+      'Comercial',
+      'Otro'
     ],
     trim: true
   },
-  presupuestoID: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Presupuesto'
-    // Opcional: asociar deuda a un presupuesto específico
+  
+  // Categorización por plazo
+  plazo: {
+    type: String,
+    enum: ['Corto Plazo', 'Largo Plazo'],
+    required: true,
+    default: 'Corto Plazo'
   },
+  
+  // Prestador/entidad a la que se debe
   prestador: {
     type: String,
     required: [true, 'El prestador es requerido'],
     trim: true
   },
+  
+  // Montos
   montoTotal: {
     type: Number,
     required: function() {
@@ -52,6 +81,18 @@ const debtSchema = new mongoose.Schema({
     },
     min: [0, 'El monto total no puede ser negativo']
   },
+  saldoPendiente: {
+    type: Number,
+    required: true,
+    min: [0, 'El saldo pendiente no puede ser negativo']
+  },
+  saldoPagado: {
+    type: Number,
+    default: 0,
+    min: [0, 'El saldo pagado no puede ser negativo']
+  },
+  
+  // Cuotas y pagos
   numeroCuotas: {
     type: Number,
     required: function() {
@@ -70,11 +111,15 @@ const debtSchema = new mongoose.Schema({
   },
   montoCuota: {
     type: Number,
-    required: function() {
-      // Si tiene monto total, el monto de cuota se calcula automáticamente
-      return !!this.montoTotal;
-    },
+    required: false, // Se calcula automáticamente en pre-save
     min: [0, 'El monto de la cuota no puede ser negativo']
+  },
+  
+  // Información financiera
+  tasaInteres: {
+    type: Number,
+    default: 0,
+    min: [0, 'La tasa de interés no puede ser negativa']
   },
   moneda: {
     type: String,
@@ -83,51 +128,50 @@ const debtSchema = new mongoose.Schema({
     uppercase: true,
     trim: true
   },
-  saldoPendiente: {
-    type: Number,
-    required: true,
-    min: [0, 'El saldo pendiente no puede ser negativo']
-  },
-  saldoPagado: {
-    type: Number,
-    default: 0,
-    min: [0, 'El saldo pagado no puede ser negativo']
-  },
-  tasaInteres: {
-    type: Number,
-    default: 0,
-    min: [0, 'La tasa de interés no puede ser negativa']
-  },
+  
+  // Fechas
   fechaInicio: {
     type: Date,
     default: Date.now
   },
   fechaVencimiento: Date,
+  
+  // Estado
   estado: {
     type: String,
     enum: ['Activa', 'Pagada', 'Vencida'],
     default: 'Activa'
   },
+  
+  // Asociación con presupuestos (array para múltiples)
+  presupuestoID: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Presupuesto'
+  }],
+  
   descripcion: {
     type: String,
     trim: true
+  },
+  
+  // Metadata flexible para datos adicionales
+  metadata: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
   }
 }, {
   timestamps: true
 });
 
 // Pre-save hook para calcular montoCuota y numeroCuotas automáticamente
-debtSchema.pre('save', function(next) {
+pasivoSchema.pre('save', function(next) {
   // Si tiene montoTotal y numeroCuotas, calcular montoCuota
   if (this.montoTotal && this.numeroCuotas) {
     this.montoCuota = Math.round((this.montoTotal / this.numeroCuotas) * 100) / 100;
   }
   
   // Si tiene abonoMensual pero no montoTotal, calcular numeroCuotas basado en abono
-  // (esto es para deudas sin plazo definido pero con compromiso mensual)
   if (this.abonoMensual && !this.montoTotal) {
-    // Si no hay monto total, asumimos que es una deuda abierta
-    // El numeroCuotas puede ser null o un número estimado
     this.montoCuota = this.abonoMensual;
   }
   
@@ -142,14 +186,21 @@ debtSchema.pre('save', function(next) {
     this.saldoPendiente = this.montoTotal || 0;
   }
   
+  // Auto-categorizar plazo según categoría
+  if (!this.plazo || this.isModified('categoria')) {
+    const categoriasLargoPlazo = ['Hipotecario', 'Automotriz'];
+    this.plazo = categoriasLargoPlazo.includes(this.categoria) ? 'Largo Plazo' : 'Corto Plazo';
+  }
+  
   next();
 });
 
 // Indexes
-debtSchema.index({ perfilID: 1 });
-debtSchema.index({ perfilID: 1, estado: 1 });
-debtSchema.index({ presupuestoID: 1 });
-debtSchema.index({ fechaVencimiento: 1 });
+pasivoSchema.index({ perfilID: 1 });
+pasivoSchema.index({ perfilID: 1, tipo: 1 });
+pasivoSchema.index({ perfilID: 1, estado: 1 });
+pasivoSchema.index({ perfilID: 1, plazo: 1 });
+pasivoSchema.index({ presupuestoID: 1 });
+pasivoSchema.index({ fechaVencimiento: 1 });
 
-module.exports = mongoose.model('Debt', debtSchema);
-
+module.exports = mongoose.model('Pasivo', pasivoSchema);

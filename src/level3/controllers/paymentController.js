@@ -1,6 +1,6 @@
 const asyncHandler = require('@core/utils/asyncHandler');
 const Payment = require('@models/Payment');
-const Debt = require('@models/Debt');
+const Pasivo = require('@models/Pasivo'); // Reemplaza Pasivo
 const Profile = require('@models/Profile');
 
 /**
@@ -117,7 +117,7 @@ exports.createPayment = asyncHandler(async (req, res, next) => {
   }
 
   // Verificar que la deuda existe y pertenece al perfil
-  const debt = await Debt.findOne({ _id: deudaID, perfilID });
+  const debt = await Pasivo.findOne({ _id: deudaID, perfilID });
   if (!debt) {
     return res.status(404).json({
       success: false,
@@ -179,7 +179,7 @@ exports.createPayment = asyncHandler(async (req, res, next) => {
     updateData.estado = 'Pagada';
   }
 
-  await Debt.findByIdAndUpdate(deudaID, updateData);
+  await Pasivo.findByIdAndUpdate(deudaID, updateData);
 
   const updatedPayment = await Payment.findById(payment._id)
     .populate('deudaID')
@@ -217,13 +217,13 @@ exports.updatePayment = asyncHandler(async (req, res, next) => {
 
   // Si se actualiza el monto, recalcular saldos de la deuda
   if (req.body.monto && req.body.monto !== payment.monto) {
-    const debt = await Debt.findById(payment.deudaID);
+    const debt = await Pasivo.findById(payment.deudaID);
     if (debt) {
       const diferencia = req.body.monto - payment.monto;
       const nuevoSaldoPagado = debt.saldoPagado + diferencia;
       const nuevoSaldoPendiente = Math.max(0, debt.saldoPendiente - diferencia);
 
-      await Debt.findByIdAndUpdate(payment.deudaID, {
+      await Pasivo.findByIdAndUpdate(payment.deudaID, {
         saldoPagado: nuevoSaldoPagado,
         saldoPendiente: nuevoSaldoPendiente,
         estado: nuevoSaldoPendiente === 0 ? 'Pagada' : debt.estado
@@ -273,12 +273,12 @@ exports.deletePayment = asyncHandler(async (req, res, next) => {
   }
 
   // Recalcular saldos de la deuda
-  const debt = await Debt.findById(payment.deudaID);
+  const debt = await Pasivo.findById(payment.deudaID);
   if (debt) {
     const nuevoSaldoPagado = Math.max(0, debt.saldoPagado - payment.monto);
     const nuevoSaldoPendiente = debt.saldoPendiente + payment.monto;
 
-    await Debt.findByIdAndUpdate(payment.deudaID, {
+    await Pasivo.findByIdAndUpdate(payment.deudaID, {
       saldoPagado: nuevoSaldoPagado,
       saldoPendiente: nuevoSaldoPendiente,
       estado: nuevoSaldoPendiente > 0 ? 'Activa' : debt.estado

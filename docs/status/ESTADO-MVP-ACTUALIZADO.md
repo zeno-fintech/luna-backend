@@ -1,6 +1,7 @@
-# 📊 Estado del MVP - LUNA Backend (Actualizado)
+# 📊 Estado del MVP - FinUp Backend (Actualizado)
 
-**Fecha de actualización:** 2025-01-01
+**Fecha de actualización:** 2025-01-16  
+**Última actualización:** Sistema de Patrimonio Unificado implementado
 
 ## ✅ COMPLETADO - Funcionalidades Core
 
@@ -27,11 +28,17 @@
 - ✅ Múltiples perfiles por usuario
 - ✅ Validación de propiedad
 
-### 4. Gestión de Cuentas ✅
-- ✅ CRUD completo de cuentas
-- ✅ Tipos: Corriente, Ahorro, Tarjeta, Efectivo, Inversión
+### 4. Sistema de Patrimonio Unificado ✅ (ACTUALIZADO 16/01/2025)
+- ✅ **Nuevo modelo `Activo`** - Unifica: Cuentas Bancarias, Propiedades, Vehículos, Inversiones, Efectivo, Ahorros
+- ✅ **Nuevo modelo `Pasivo`** - Unifica: Todas las deudas (Personal, Institucional, Bancaria, Comercial)
+- ✅ CRUD completo de Activos (`/api/v1/patrimonio/activos`)
+- ✅ CRUD completo de Pasivos (`/api/v1/patrimonio/pasivos`)
+- ✅ Resumen de Patrimonio (`/api/v1/patrimonio/resumen`)
+- ✅ Auto-categorización por tipo, liquidez y plazo
+- ✅ `presupuestoID` como array (múltiples presupuestos)
 - ✅ Actualización automática de saldos
 - ✅ Validación de propiedad
+- ⚠️ **Deprecado:** `/api/v1/accounts`, `/api/v1/assets`, `/api/v1/debts`, `/api/v1/savings`
 
 ### 5. Gestión de Transacciones ✅
 - ✅ CRUD completo de transacciones
@@ -42,8 +49,9 @@
 - ✅ Gastos fijos (se copian al nuevo mes)
 - ✅ Asociación con tableros financieros
 
-### 6. Gestión de Deudas ✅
-- ✅ CRUD completo de deudas
+### 6. Gestión de Deudas ✅ (INTEGRADO EN PATRIMONIO)
+- ✅ **Integrado en modelo `Pasivo`** - Ver Sistema de Patrimonio Unificado
+- ✅ CRUD completo de pasivos (deudas)
 - ✅ Cálculo automático de cuotas
 - ✅ Tipos: Personal, Institucional, Bancaria, Comercial
 - ✅ Pagos de deudas
@@ -111,19 +119,12 @@
 - ❌ Eliminar categoría
 - **Nota:** El modelo Category existe, pero falta el controlador y rutas
 
-### 2. CRUD de Activos ⚠️
-- ❌ Listar activos
-- ❌ Crear activo (propiedades, vehículos, inversiones)
-- ❌ Actualizar activo
-- ❌ Eliminar activo
-- **Nota:** El modelo Asset existe, pero falta el controlador y rutas
-
-### 3. CRUD de Ahorros ⚠️
-- ❌ Listar ahorros
-- ❌ Crear ahorro/inversión
-- ❌ Actualizar ahorro
-- ❌ Eliminar ahorro
-- **Nota:** El modelo Savings existe, pero falta el controlador y rutas
+### 2. ✅ COMPLETADO: Sistema de Patrimonio (16/01/2025)
+- ✅ CRUD completo de Activos implementado
+- ✅ CRUD completo de Pasivos implementado
+- ✅ Resumen de Patrimonio implementado
+- ✅ Migración de datos completada
+- ✅ Pruebas CRUD exitosas
 
 ### 4. CRUD de Reglas ⚠️
 - ❌ Listar reglas de un tablero
@@ -158,13 +159,13 @@
 
 ## 📊 Resumen de Estado
 
-### Funcionalidades Core: 90% ✅
+### Funcionalidades Core: 95% ✅ (ACTUALIZADO 16/01/2025)
 - ✅ Autenticación y autorización
-- ✅ Perfiles, Cuentas, Transacciones
-- ✅ Deudas y Pagos
+- ✅ Perfiles, Patrimonio (Activos y Pasivos), Transacciones
+- ✅ Deudas y Pagos (integrados en Patrimonio)
 - ✅ Tableros Financieros e Ingresos
 - ✅ Analytics y Resúmenes
-- ⚠️ Categorías, Activos, Ahorros, Reglas, Presupuestos (modelos listos, falta CRUD)
+- ⚠️ Categorías, Reglas (modelos listos, falta CRUD)
 
 ### Infraestructura: 100% ✅
 - ✅ Base de datos configurada
@@ -187,11 +188,11 @@
 ### Prioridad ALTA (Esencial para MVP)
 1. **CRUD de Categorías** - Los usuarios necesitan crear categorías personalizadas
 2. **CRUD de Reglas** - Esencial para el sistema de presupuestos 50-30-20
-3. **CRUD de Activos** - Necesario para calcular patrimonio neto completo
+3. ✅ **Sistema de Patrimonio** - COMPLETADO (16/01/2025)
 
 ### Prioridad MEDIA (Importante pero no crítico)
-4. **CRUD de Ahorros** - Útil para metas de ahorro
-5. **CRUD de Presupuestos** - Complementa el sistema de reglas
+4. ✅ **Sistema de Patrimonio** - COMPLETADO (incluye ahorros)
+5. ✅ **CRUD de Presupuestos** - Ya implementado
 6. **Validaciones completas** - Mejora la robustez
 
 ### Prioridad BAJA (Post-MVP)
@@ -204,18 +205,21 @@
 
 ## ✅ Estado General
 
-**🟢 MVP 90% Completo**
+**🟢 MVP 95% Completo** (ACTUALIZADO 16/01/2025)
 
 El MVP está **funcional y listo para pruebas** con las funcionalidades core implementadas. 
+
+**✅ Completado recientemente:**
+- ✅ Sistema de Patrimonio Unificado (Activos y Pasivos)
+- ✅ Migración de datos completada
+- ✅ Pruebas CRUD exitosas
+- ✅ Documentación actualizada
 
 **Falta principalmente:**
 - CRUD de Categorías (1-2 horas)
 - CRUD de Reglas (1-2 horas)
-- CRUD de Activos (1-2 horas)
-- CRUD de Ahorros (1 hora)
-- CRUD de Presupuestos (1-2 horas)
 
-**Tiempo estimado para completar MVP:** 6-10 horas de desarrollo
+**Tiempo estimado para completar MVP:** 2-4 horas de desarrollo
 
 ---
 

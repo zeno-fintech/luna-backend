@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const paymentSchema = new mongoose.Schema({
   deudaID: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Debt',
+    ref: 'Pasivo', // Actualizado: Debt → Pasivo
     required: true
   },
   perfilID: {

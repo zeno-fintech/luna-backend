@@ -22,22 +22,23 @@ const authRoutes = require('@level3/routes/auth');
 const transactionRoutes = require('@level3/routes/transactions');
 const analyticsRoutes = require('@level3/routes/analytics');
 const profileRoutes = require('@level3/routes/profiles');
-const accountRoutes = require('@level3/routes/accounts');
-const debtRoutes = require('@level3/routes/debts');
+// const accountRoutes = require('@level3/routes/accounts'); // ❌ ELIMINADO - usar /api/v1/patrimonio/activos
+// const debtRoutes = require('@level3/routes/debts'); // ❌ ELIMINADO - usar /api/v1/patrimonio/pasivos
 const paymentRoutes = require('@level3/routes/payments');
 const financialBoardRoutes = require('@level3/routes/financialBoards');
 const presupuestoRoutes = require('@level3/routes/presupuestos');
 const incomeRoutes = require('@level3/routes/incomes');
 const categoryRoutes = require('@level3/routes/categories');
 const ruleRoutes = require('@level3/routes/rules');
-const assetRoutes = require('@level3/routes/assets');
+// const assetRoutes = require('@level3/routes/assets'); // ❌ ELIMINADO - usar /api/v1/patrimonio/activos
 const assetValuationRoutes = require('@level3/routes/assetValuations');
-const savingsRoutes = require('@level3/routes/savings');
+// const savingsRoutes = require('@level3/routes/savings'); // ❌ ELIMINADO - usar /api/v1/patrimonio/activos
 const budgetRoutes = require('@level3/routes/budgets');
 const aiSuggestionsRoutes = require('@level3/routes/aiSuggestions');
 const appRoutes = require('@level3/routes/app');
 const currencyRoutes = require('@level3/routes/currencies');
 const countryRoutes = require('@level3/routes/countries');
+const patrimonioRoutes = require('@level3/routes/patrimonio'); // ✅ NUEVO - Modelo unificado
 
 const errorHandler = require('@core/middleware/errorHandler');
 const { swaggerSetup } = require('./config/swagger');
@@ -95,7 +96,7 @@ swaggerSetup(app);
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
-    message: 'LUNA Backend API is running',
+    message: 'FinUp Backend API is running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development'
   });
@@ -113,7 +114,7 @@ app.get('/health', (req, res) => {
  */
 app.get('/api/v1', (req, res) => {
   res.json({
-    message: 'LUNA API v1',
+    message: 'FinUp Backend API v1',
     version: '1.0.0',
     documentation: '/api-docs',
     endpoints: {
@@ -134,7 +135,26 @@ app.get('/api/v1', (req, res) => {
       transactions: '/api/v1/transactions',
       analytics: '/api/v1/analytics',
       profiles: '/api/v1/profiles',
+      patrimonio: {
+        activos: {
+          list: '/api/v1/patrimonio/activos?perfilID=xxx&tipo=Cuenta Bancaria&categoria=Líquido',
+          detail: '/api/v1/patrimonio/activos/:id',
+          create: '/api/v1/patrimonio/activos',
+          update: '/api/v1/patrimonio/activos/:id',
+          delete: '/api/v1/patrimonio/activos/:id'
+        },
+        pasivos: {
+          list: '/api/v1/patrimonio/pasivos?perfilID=xxx&tipo=Bancaria&plazo=Corto Plazo',
+          detail: '/api/v1/patrimonio/pasivos/:id',
+          create: '/api/v1/patrimonio/pasivos',
+          update: '/api/v1/patrimonio/pasivos/:id',
+          delete: '/api/v1/patrimonio/pasivos/:id'
+        },
+        resumen: '/api/v1/patrimonio/resumen?perfilID=xxx'
+      },
+      // ⚠️ DEPRECADO - Usar /api/v1/patrimonio/activos en su lugar
       accounts: '/api/v1/accounts',
+      // ⚠️ DEPRECADO - Usar /api/v1/patrimonio/pasivos en su lugar
       debts: {
         list: '/api/v1/debts?perfilID=xxx',
         detail: '/api/v1/debts/:id',
@@ -180,6 +200,7 @@ app.get('/api/v1', (req, res) => {
         update: '/api/v1/rules/:id',
         delete: '/api/v1/rules/:id'
       },
+      // ⚠️ DEPRECADO - Usar /api/v1/patrimonio/activos en su lugar
       assets: {
         list: '/api/v1/assets?perfilID=xxx&tipo=Propiedades',
         detail: '/api/v1/assets/:id',
@@ -236,17 +257,18 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/transactions', transactionRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
 app.use('/api/v1/profiles', profileRoutes);
-app.use('/api/v1/accounts', accountRoutes);
-app.use('/api/v1/debts', debtRoutes);
+app.use('/api/v1/patrimonio', patrimonioRoutes); // ✅ NUEVO - Modelo unificado de Patrimonio
+// app.use('/api/v1/accounts', accountRoutes); // ❌ ELIMINADO - usar /api/v1/patrimonio/activos
+// app.use('/api/v1/debts', debtRoutes); // ❌ ELIMINADO - usar /api/v1/patrimonio/pasivos
 app.use('/api/v1/payments', paymentRoutes);
 // app.use('/api/v1/financial-boards', financialBoardRoutes); // Deprecado - usar /api/v1/presupuestos
 app.use('/api/v1/presupuestos', presupuestoRoutes);
 app.use('/api/v1/incomes', incomeRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/rules', ruleRoutes);
-app.use('/api/v1/assets', assetRoutes);
-app.use('/api/v1/assets', assetValuationRoutes);
-app.use('/api/v1/savings', savingsRoutes);
+// app.use('/api/v1/assets', assetRoutes); // ❌ ELIMINADO - usar /api/v1/patrimonio/activos
+app.use('/api/v1/assets', assetValuationRoutes); // Mantener solo para tasaciones
+// app.use('/api/v1/savings', savingsRoutes); // ❌ ELIMINADO - usar /api/v1/patrimonio/activos
 app.use('/api/v1/budgets', budgetRoutes);
 app.use('/api/v1/ai', aiSuggestionsRoutes);
 app.use('/api/v1/app', appRoutes);
@@ -274,7 +296,7 @@ const startServer = async () => {
     await connectDB();
     
     app.listen(PORT, () => {
-      console.log(`🚀 LUNA Backend running on port ${PORT}`);
+      console.log(`🚀 FinUp Backend running on port ${PORT}`);
       console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🔗 Health check: http://localhost:${PORT}/health`);
     });

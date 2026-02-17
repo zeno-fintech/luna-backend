@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 const assetValuationSchema = new mongoose.Schema({
   activoID: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Asset',
+    ref: 'Activo', // Actualizado: Asset → Activo
     required: true
   },
   perfilID: {

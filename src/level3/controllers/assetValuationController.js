@@ -1,6 +1,6 @@
 const asyncHandler = require('@core/utils/asyncHandler');
 const AssetValuation = require('@models/AssetValuation');
-const Asset = require('@models/Asset');
+const Activo = require('@models/Activo'); // Reemplaza Asset
 const Profile = require('@models/Profile');
 
 /**
@@ -21,13 +21,13 @@ const validateProfileOwnership = async (userId, profileId) => {
  * Obtiene todas las tasaciones de un activo
  * 
  * @route GET /api/v1/assets/:assetId/valuations
- * @access Private (requiere autenticación)
+ * @access Private (requiere autenticaci?n)
  */
 exports.getAssetValuations = asyncHandler(async (req, res, next) => {
   const { assetId } = req.params;
 
   // Verificar que el activo existe y pertenece al usuario
-  const asset = await Asset.findById(assetId);
+  const asset = await Activo.findById(assetId);
   if (!asset) {
     return res.status(404).json({
       success: false,
@@ -42,7 +42,7 @@ exports.getAssetValuations = asyncHandler(async (req, res, next) => {
     });
   }
 
-  // Obtener todas las tasaciones ordenadas por fecha (más reciente primero)
+  // Obtener todas las tasaciones ordenadas por fecha (m?s reciente primero)
   const valuations = await AssetValuation.find({ activoID: assetId })
     .sort({ fecha: -1 });
 
@@ -54,10 +54,10 @@ exports.getAssetValuations = asyncHandler(async (req, res, next) => {
 });
 
 /**
- * Obtiene una tasación específica
+ * Obtiene una tasaci?n espec?fica
  * 
  * @route GET /api/v1/assets/valuations/:id
- * @access Private (requiere autenticación)
+ * @access Private (requiere autenticaci?n)
  */
 exports.getAssetValuation = asyncHandler(async (req, res, next) => {
   const valuation = await AssetValuation.findById(req.params.id)
@@ -66,7 +66,7 @@ exports.getAssetValuation = asyncHandler(async (req, res, next) => {
   if (!valuation) {
     return res.status(404).json({
       success: false,
-      message: 'Tasación no encontrada'
+      message: 'Tasaci?n no encontrada'
     });
   }
 
@@ -74,7 +74,7 @@ exports.getAssetValuation = asyncHandler(async (req, res, next) => {
   if (!(await validateProfileOwnership(req.user.id, valuation.perfilID))) {
     return res.status(403).json({
       success: false,
-      message: 'No tienes acceso a esta tasación'
+      message: 'No tienes acceso a esta tasaci?n'
     });
   }
 
@@ -85,10 +85,10 @@ exports.getAssetValuation = asyncHandler(async (req, res, next) => {
 });
 
 /**
- * Crea una nueva tasación
+ * Crea una nueva tasaci?n
  * 
  * @route POST /api/v1/assets/:assetId/valuations
- * @access Private (requiere autenticación)
+ * @access Private (requiere autenticaci?n)
  */
 exports.createAssetValuation = asyncHandler(async (req, res, next) => {
   const { assetId } = req.params;
@@ -104,7 +104,7 @@ exports.createAssetValuation = asyncHandler(async (req, res, next) => {
   } = req.body;
 
   // Verificar que el activo existe y pertenece al usuario
-  const asset = await Asset.findById(assetId);
+  const asset = await Activo.findById(assetId);
   if (!asset) {
     return res.status(404).json({
       success: false,
@@ -142,7 +142,7 @@ exports.createAssetValuation = asyncHandler(async (req, res, next) => {
     valorUF: valorUF || null,
     valorUFEnCLP: valorUFEnCLP || null,
     valorDirectoCLP: valorDirectoCLP || null,
-    tipoTasacion: tipoTasacion || 'Tasación Bancaria',
+    tipoTasacion: tipoTasacion || 'Tasaci?n Bancaria',
     institucion: institucion || null,
     observaciones: observaciones || null,
     metadata: metadata || {}
@@ -155,10 +155,10 @@ exports.createAssetValuation = asyncHandler(async (req, res, next) => {
 });
 
 /**
- * Actualiza una tasación
+ * Actualiza una tasaci?n
  * 
  * @route PUT /api/v1/assets/valuations/:id
- * @access Private (requiere autenticación)
+ * @access Private (requiere autenticaci?n)
  */
 exports.updateAssetValuation = asyncHandler(async (req, res, next) => {
   let valuation = await AssetValuation.findById(req.params.id);
@@ -166,7 +166,7 @@ exports.updateAssetValuation = asyncHandler(async (req, res, next) => {
   if (!valuation) {
     return res.status(404).json({
       success: false,
-      message: 'Tasación no encontrada'
+      message: 'Tasaci?n no encontrada'
     });
   }
 
@@ -174,7 +174,7 @@ exports.updateAssetValuation = asyncHandler(async (req, res, next) => {
   if (!(await validateProfileOwnership(req.user.id, valuation.perfilID))) {
     return res.status(403).json({
       success: false,
-      message: 'No tienes acceso a esta tasación'
+      message: 'No tienes acceso a esta tasaci?n'
     });
   }
 
@@ -190,10 +190,10 @@ exports.updateAssetValuation = asyncHandler(async (req, res, next) => {
 });
 
 /**
- * Elimina una tasación
+ * Elimina una tasaci?n
  * 
  * @route DELETE /api/v1/assets/valuations/:id
- * @access Private (requiere autenticación)
+ * @access Private (requiere autenticaci?n)
  */
 exports.deleteAssetValuation = asyncHandler(async (req, res, next) => {
   const valuation = await AssetValuation.findById(req.params.id);
@@ -201,7 +201,7 @@ exports.deleteAssetValuation = asyncHandler(async (req, res, next) => {
   if (!valuation) {
     return res.status(404).json({
       success: false,
-      message: 'Tasación no encontrada'
+      message: 'Tasaci?n no encontrada'
     });
   }
 
@@ -209,7 +209,7 @@ exports.deleteAssetValuation = asyncHandler(async (req, res, next) => {
   if (!(await validateProfileOwnership(req.user.id, valuation.perfilID))) {
     return res.status(403).json({
       success: false,
-      message: 'No tienes acceso a esta tasación'
+      message: 'No tienes acceso a esta tasaci?n'
     });
   }
 
@@ -217,21 +217,21 @@ exports.deleteAssetValuation = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: 'Tasación eliminada'
+    message: 'Tasaci?n eliminada'
   });
 });
 
 /**
- * Obtiene el historial de evolución de valor de un activo
+ * Obtiene el historial de evoluci?n de valor de un activo
  * 
  * @route GET /api/v1/assets/:assetId/valuations/history
- * @access Private (requiere autenticación)
+ * @access Private (requiere autenticaci?n)
  */
 exports.getAssetValuationHistory = asyncHandler(async (req, res, next) => {
   const { assetId } = req.params;
 
   // Verificar que el activo existe y pertenece al usuario
-  const asset = await Asset.findById(assetId);
+  const asset = await Activo.findById(assetId);
   if (!asset) {
     return res.status(404).json({
       success: false,
@@ -246,11 +246,11 @@ exports.getAssetValuationHistory = asyncHandler(async (req, res, next) => {
     });
   }
 
-  // Obtener todas las tasaciones ordenadas por fecha (más antigua primero)
+  // Obtener todas las tasaciones ordenadas por fecha (m?s antigua primero)
   const valuations = await AssetValuation.find({ activoID: assetId })
     .sort({ fecha: 1 });
 
-  // Calcular evolución
+  // Calcular evoluci?n
   const evolution = valuations.map((val, index) => {
     const previousVal = index > 0 ? valuations[index - 1] : null;
     let change = null;
@@ -263,9 +263,9 @@ exports.getAssetValuationHistory = asyncHandler(async (req, res, next) => {
       
       // Determinar tendencia
       if (change > 0) {
-        trend = 'up'; // Apreciación (propiedades generalmente)
+        trend = 'up'; // Apreciaci?n (propiedades generalmente)
       } else if (change < 0) {
-        trend = 'down'; // Depreciación (vehículos generalmente)
+        trend = 'down'; // Depreciaci?n (veh?culos generalmente)
       } else {
         trend = 'stable';
       }
@@ -310,14 +310,14 @@ exports.getAssetValuationHistory = asyncHandler(async (req, res, next) => {
         tendencia: valuations.length > 1 && valuations[0].valorCLP
           ? (valuations[valuations.length - 1].valorCLP > valuations[0].valorCLP ? 'up' : 'down')
           : null,
-        // Para propiedades: apreciación, para vehículos: depreciación
+        // Para propiedades: apreciaci?n, para veh?culos: depreciaci?n
         tipoActivo: asset.tipo,
         interpretacion: valuations.length > 1 && valuations[0].valorCLP
-          ? (asset.tipo === 'Vehículos' 
-              ? 'Depreciación esperada para vehículos'
+          ? (asset.tipo === 'Veh?culos' 
+              ? 'Depreciaci?n esperada para veh?culos'
               : asset.tipo === 'Propiedades'
-              ? 'Apreciación esperada para propiedades'
-              : 'Evolución del valor')
+              ? 'Apreciaci?n esperada para propiedades'
+              : 'Evoluci?n del valor')
           : null
       }
     }

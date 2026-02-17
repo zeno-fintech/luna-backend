@@ -4,8 +4,8 @@ const Income = require('@models/Income');
 const Transaction = require('@models/Transaction');
 const Rule = require('@models/Rule');
 const Profile = require('@models/Profile');
-const Asset = require('@models/Asset');
-const Debt = require('@models/Debt');
+const Activo = require('@models/Activo'); // Reemplaza Asset
+const Pasivo = require('@models/Pasivo'); // Reemplaza Debt
 
 /**
  * @fileoverview Controlador de Presupuestos - Maneja CRUD de presupuestos
@@ -91,9 +91,9 @@ exports.getPresupuesto = asyncHandler(async (req, res, next) => {
     tipo: 'Gasto'
   }).populate('categoriaID reglaID');
 
-  // Obtener activos y pasivos asociados
-  const activos = await Asset.find({ presupuestoID: presupuesto._id });
-  const pasivos = await Debt.find({ presupuestoID: presupuesto._id });
+  // Obtener activos y pasivos asociados (usando presupuestoID en array)
+  const activos = await Activo.find({ presupuestoID: { $in: [presupuesto._id] } });
+  const pasivos = await Pasivo.find({ presupuestoID: { $in: [presupuesto._id] } });
 
   res.status(200).json({
     success: true,
@@ -335,13 +335,15 @@ exports.deletePresupuesto = asyncHandler(async (req, res, next) => {
     { presupuestoID: presupuesto._id },
     { $unset: { presupuestoID: 1 } }
   );
-  await Asset.updateMany(
+  // Remover presupuestoID del array en Activos
+  await Activo.updateMany(
     { presupuestoID: presupuesto._id },
-    { $unset: { presupuestoID: 1 } }
+    { $pull: { presupuestoID: presupuesto._id } }
   );
-  await Debt.updateMany(
+  // Remover presupuestoID del array en Pasivos
+  await Pasivo.updateMany(
     { presupuestoID: presupuesto._id },
-    { $unset: { presupuestoID: 1 } }
+    { $pull: { presupuestoID: presupuesto._id } }
   );
 
   await presupuesto.deleteOne();

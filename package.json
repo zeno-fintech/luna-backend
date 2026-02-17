@@ -1,7 +1,7 @@
 {
-  "name": "luna-backend",
+  "name": "finup-backend",
   "version": "1.0.0",
-  "description": "Backend API para LUNA - Node.js + MongoDB + IA + Blockchain",
+  "description": "Backend API para FinUp - Plataforma de finanzas personales para Latinoamérica",
   "main": "src/index.js",
   "_moduleAliases": {
     "@": "src",
@@ -22,7 +22,9 @@
     "commit": "node scripts/commit.js",
     "generate:jwt-secret": "node scripts/generateJWTSecret.js",
     "script:assign-users": "node scripts/assignUsersToDefaultTenant.js",
-    "script:calculate-metrics": "node scripts/calculateMetricsSnapshot.js"
+    "script:calculate-metrics": "node scripts/calculateMetricsSnapshot.js",
+    "migrate:patrimonio": "node scripts/migrateToPatrimonio.js",
+    "test:crud": "node scripts/testCRUD.js"
   },
   "keywords": [
     "fintech",

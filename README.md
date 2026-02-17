@@ -1,6 +1,6 @@
-# LUNA Backend API
+# FinUp Backend API
 
-Backend API para LUNA - Plataforma de educación financiera con arquitectura multi-tenant.
+Backend API para FinUp - Plataforma de finanzas personales para Latinoamérica con arquitectura multi-tenant.
 
 > **📚 Toda la documentación está en [`luna-docs/backend/`](../../luna-docs/backend/)**
 
@@ -20,7 +20,7 @@ cp .env.example .env
 npm run dev
 ```
 
-**Backend corriendo en:** `http://localhost:3001`
+**Backend corriendo en:** `http://localhost:3002`
 
 ---
 
@@ -90,18 +90,18 @@ luna-backend/
 
 ### Swagger UI (Documentación Interactiva)
 
-**Desarrollo:** `http://localhost:3001/api-docs`  
-**Producción:** `https://api.finanzasfacil.cl/api-docs`
+**Desarrollo:** `http://localhost:3002/api-docs`  
+**Producción:** `https://luna-backend-production-ff08.up.railway.app/api-docs`
 
 ### Endpoints Principales
 
 - **Auth:** `/api/v1/auth/register`, `/api/v1/auth/login`, `/api/v1/auth/me`
 - **Profiles:** `/api/v1/profiles`
-- **Accounts:** `/api/v1/accounts`
+- **Patrimonio:** `/api/v1/patrimonio/activos`, `/api/v1/patrimonio/pasivos`, `/api/v1/patrimonio/resumen`
 - **Transactions:** `/api/v1/transactions`
 - **Analytics:** `/api/v1/analytics/summary`, `/api/v1/app/summary`
-- **Debts:** `/api/v1/debts`
-- **Financial Boards:** `/api/v1/financial-boards`
+- **Presupuestos:** `/api/v1/presupuestos`
+- **⚠️ Deprecado:** `/api/v1/accounts`, `/api/v1/assets`, `/api/v1/debts` (usar `/api/v1/patrimonio` en su lugar)
 
 **Ver documentación completa:** [Swagger Documentation](../../luna-docs/backend/api/SWAGGER-DOCUMENTATION.md)
 
@@ -113,9 +113,9 @@ luna-backend/
 
 **Funcionalidades Implementadas:**
 - ✅ Autenticación JWT completa
-- ✅ CRUD de Perfiles, Cuentas, Transacciones
-- ✅ Sistema de Deudas y Pagos
-- ✅ Tableros Financieros
+- ✅ CRUD de Perfiles, Transacciones
+- ✅ **Sistema de Patrimonio unificado** (Activos y Pasivos)
+- ✅ Presupuestos con Reglas (50/30/20)
 - ✅ Analytics y Resúmenes
 - ✅ Insights con IA básicos
 
@@ -143,11 +143,11 @@ El backend incluye los siguientes modelos:
 
 - **User** - Usuarios del sistema
 - **Profile** - Perfiles de usuario
-- **Account** - Cuentas bancarias
+- **Activo** - Activos unificados (cuentas bancarias, propiedades, vehículos, inversiones, efectivo, otros)
+- **Pasivo** - Pasivos unificados (todas las deudas)
 - **Transaction** - Transacciones (Ingresos/Gastos)
-- **Debt** - Deudas
 - **Payment** - Pagos
-- **FinancialBoard** - Tableros financieros
+- **Presupuesto** - Presupuestos mensuales
 - **Income** - Ingresos
 - **Rule** - Reglas financieras
 - Y más...

@@ -4,7 +4,7 @@
  * @module level3/services/debtLevelService
  */
 
-const Debt = require('@models/Debt');
+const Pasivo = require('@models/Pasivo'); // Reemplaza Pasivo
 const Payment = require('@models/Payment');
 const Transaction = require('@models/Transaction');
 
@@ -21,9 +21,9 @@ const Transaction = require('@models/Transaction');
  * @param {number} [monthlyIncome] - Ingresos mensuales (opcional, se calcula si no se proporciona)
  * @returns {Promise<Object>} Objeto con nivel de deuda y detalles
  */
-exports.calculateDebtLevel = async (profileId, monthlyIncome = null) => {
+exports.calculatePasivoLevel = async (profileId, monthlyIncome = null) => {
   // Obtener todas las deudas activas
-  const debts = await Debt.find({
+  const debts = await Pasivo.find({
     perfilID: profileId,
     estado: { $ne: 'Pagada' }
   });
@@ -35,13 +35,13 @@ exports.calculateDebtLevel = async (profileId, monthlyIncome = null) => {
       levelColor: 'green',
       levelIcon: '🟢',
       message: 'No tienes deudas activas',
-      totalDebt: 0,
+      totalPasivo: 0,
       debtToIncomeRatio: 0,
       daysOverdue: 0,
       details: {
-        totalDebts: 0,
-        activeDebts: 0,
-        overdueDebts: 0,
+        totalPasivos: 0,
+        activePasivos: 0,
+        overduePasivos: 0,
         maxDaysOverdue: 0
       }
     };
@@ -62,17 +62,17 @@ exports.calculateDebtLevel = async (profileId, monthlyIncome = null) => {
   }
 
   // Calcular total de deudas
-  const totalDebt = debts.reduce((sum, debt) => sum + (debt.saldoPendiente || 0), 0);
+  const totalPasivo = debts.reduce((sum, debt) => sum + (debt.saldoPendiente || 0), 0);
 
   // Calcular ratio deuda/ingresos
   const debtToIncomeRatio = monthlyIncome > 0 
-    ? (totalDebt / monthlyIncome) * 100 
-    : totalDebt > 0 ? 999 : 0; // Si no hay ingresos pero hay deudas, ratio muy alto
+    ? (totalPasivo / monthlyIncome) * 100 
+    : totalPasivo > 0 ? 999 : 0; // Si no hay ingresos pero hay deudas, ratio muy alto
 
   // Analizar estado de pagos y atrasos
   const now = new Date();
   let maxDaysOverdue = 0;
-  let overdueDebts = 0;
+  let overduePasivos = 0;
   let totalDaysOverdue = 0;
 
   for (const debt of debts) {
@@ -95,7 +95,7 @@ exports.calculateDebtLevel = async (profileId, monthlyIncome = null) => {
         if (daysOverdue > 0) {
           maxDaysOverdue = Math.max(maxDaysOverdue, daysOverdue);
           totalDaysOverdue += daysOverdue;
-          overdueDebts++;
+          overduePasivos++;
         }
       } else if (debt.montoCuota) {
         // Si no hay fecha de vencimiento pero hay cuota mensual,
@@ -105,7 +105,7 @@ exports.calculateDebtLevel = async (profileId, monthlyIncome = null) => {
           const estimatedOverdue = expectedDaysSincePayment - 30;
           maxDaysOverdue = Math.max(maxDaysOverdue, estimatedOverdue);
           totalDaysOverdue += estimatedOverdue;
-          if (estimatedOverdue > 0) overdueDebts++;
+          if (estimatedOverdue > 0) overduePasivos++;
         }
       }
     } else {
@@ -117,13 +117,13 @@ exports.calculateDebtLevel = async (profileId, monthlyIncome = null) => {
         if (daysOverdue > 0) {
           maxDaysOverdue = Math.max(maxDaysOverdue, daysOverdue);
           totalDaysOverdue += daysOverdue;
-          overdueDebts++;
+          overduePasivos++;
         }
       }
     }
   }
 
-  const avgDaysOverdue = overdueDebts > 0 ? totalDaysOverdue / overdueDebts : 0;
+  const avgDaysOverdue = overduePasivos > 0 ? totalDaysOverdue / overduePasivos : 0;
 
   // Determinar nivel de deuda
   let level = 1;
@@ -188,7 +188,7 @@ exports.calculateDebtLevel = async (profileId, monthlyIncome = null) => {
     levelColor,
     levelIcon,
     message,
-    totalDebt,
+    totalPasivo,
     monthlyIncome,
     debtToIncomeRatio: debtToIncomeRatio.toFixed(2),
     daysOverdue: {
@@ -197,9 +197,9 @@ exports.calculateDebtLevel = async (profileId, monthlyIncome = null) => {
       total: totalDaysOverdue
     },
     details: {
-      totalDebts: debts.length,
-      activeDebts: debts.filter(d => d.estado === 'Activa').length,
-      overdueDebts,
+      totalPasivos: debts.length,
+      activePasivos: debts.filter(d => d.estado === 'Activa').length,
+      overduePasivos,
       maxDaysOverdue,
       debtsByType: {
         Personal: debts.filter(d => d.tipo === 'Personal').length,
@@ -208,14 +208,14 @@ exports.calculateDebtLevel = async (profileId, monthlyIncome = null) => {
         Comercial: debts.filter(d => d.tipo === 'Comercial').length
       }
     },
-    recommendations: generateRecommendations(level, debtToIncomeRatio, maxDaysOverdue, overdueDebts)
+    recommendations: generateRecommendations(level, debtToIncomeRatio, maxDaysOverdue, overduePasivos)
   };
 };
 
 /**
  * Genera recomendaciones basadas en el nivel de deuda
  */
-function generateRecommendations(level, debtToIncomeRatio, maxDaysOverdue, overdueDebts) {
+function generateRecommendations(level, debtToIncomeRatio, maxDaysOverdue, overduePasivos) {
   const recommendations = [];
 
   if (level === 4) {

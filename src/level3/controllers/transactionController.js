@@ -1,7 +1,7 @@
 const asyncHandler = require('@core/utils/asyncHandler');
 const Transaction = require('@models/Transaction');
-const Account = require('@models/Account');
-const Debt = require('@models/Debt');
+const Activo = require('@models/Activo'); // Reemplaza Activo
+const Pasivo = require('@models/Pasivo'); // Reemplaza Pasivo
 const Payment = require('@models/Payment');
 const Profile = require('@models/Profile');
 
@@ -188,7 +188,7 @@ exports.createTransaction = asyncHandler(async (req, res, next) => {
     }
 
     // Verificar que la deuda existe y pertenece al perfil
-    const debt = await Debt.findOne({ _id: deudaID, perfilID });
+    const debt = await Pasivo.findOne({ _id: deudaID, perfilID });
     if (!debt) {
       return res.status(404).json({
         success: false,
@@ -201,14 +201,16 @@ exports.createTransaction = asyncHandler(async (req, res, next) => {
 
   // Update account balance if account is specified
   if (transaction.cuentaID) {
-    const account = await Account.findById(transaction.cuentaID);
-    if (account) {
+    const activo = await Activo.findById(transaction.cuentaID);
+    if (activo && ['Cuenta Corriente', 'Cuenta Ahorro', 'Efectivo'].includes(activo.tipo)) {
       if (transaction.tipo === 'Ingreso') {
-        account.saldoDisponible += transaction.monto;
+        activo.saldoDisponible = (activo.saldoDisponible || 0) + transaction.monto;
+        activo.valor = activo.saldoDisponible;
       } else if (transaction.tipo === 'Gasto') {
-        account.saldoDisponible -= transaction.monto;
+        activo.saldoDisponible = Math.max(0, (activo.saldoDisponible || 0) - transaction.monto);
+        activo.valor = activo.saldoDisponible;
       }
-      await account.save();
+      await activo.save();
     }
   }
 
@@ -232,7 +234,7 @@ exports.createTransaction = asyncHandler(async (req, res, next) => {
 
   // Si es un gasto con deuda asociada, crear el pago automáticamente
   if (transaction.tipo === 'Gasto' && transaction.deudaID) {
-    const debt = await Debt.findById(transaction.deudaID);
+    const debt = await Pasivo.findById(transaction.deudaID);
     if (debt) {
       // Determinar número de cuota
       let numeroCuotaPago = numeroCuota;
@@ -292,7 +294,7 @@ exports.createTransaction = asyncHandler(async (req, res, next) => {
         updateData.estado = 'Pagada';
       }
 
-      await Debt.findByIdAndUpdate(transaction.deudaID, updateData);
+      await Pasivo.findByIdAndUpdate(transaction.deudaID, updateData);
 
       // Cargar la transacción con el pago creado
       const transactionWithPayment = await Transaction.findById(transaction._id)
@@ -371,15 +373,17 @@ exports.updateTransaction = asyncHandler(async (req, res, next) => {
 
   // If amount or type changed, update account balance
   if (req.body.monto || req.body.tipo) {
-    const oldAccount = await Account.findById(transaction.cuentaID);
-    if (oldAccount) {
+    const oldActivo = await Activo.findById(transaction.cuentaID);
+    if (oldActivo && ['Cuenta Corriente', 'Cuenta Ahorro', 'Efectivo'].includes(oldActivo.tipo)) {
       // Revert old transaction
       if (transaction.tipo === 'Ingreso') {
-        oldAccount.saldoDisponible -= transaction.monto;
+        oldActivo.saldoDisponible = Math.max(0, (oldActivo.saldoDisponible || 0) - transaction.monto);
+        oldActivo.valor = oldActivo.saldoDisponible;
       } else if (transaction.tipo === 'Gasto') {
-        oldAccount.saldoDisponible += transaction.monto;
+        oldActivo.saldoDisponible = (oldActivo.saldoDisponible || 0) + transaction.monto;
+        oldActivo.valor = oldActivo.saldoDisponible;
       }
-      await oldAccount.save();
+      await oldActivo.save();
     }
   }
 
@@ -394,14 +398,16 @@ exports.updateTransaction = asyncHandler(async (req, res, next) => {
 
   // Update new account balance
   if (transaction.cuentaID) {
-    const account = await Account.findById(transaction.cuentaID);
-    if (account) {
+    const activo = await Activo.findById(transaction.cuentaID);
+    if (activo && ['Cuenta Corriente', 'Cuenta Ahorro', 'Efectivo'].includes(activo.tipo)) {
       if (transaction.tipo === 'Ingreso') {
-        account.saldoDisponible += transaction.monto;
+        activo.saldoDisponible = (activo.saldoDisponible || 0) + transaction.monto;
+        activo.valor = activo.saldoDisponible;
       } else if (transaction.tipo === 'Gasto') {
-        account.saldoDisponible -= transaction.monto;
+        activo.saldoDisponible = Math.max(0, (activo.saldoDisponible || 0) - transaction.monto);
+        activo.valor = activo.saldoDisponible;
       }
-      await account.save();
+      await activo.save();
     }
   }
 
@@ -472,14 +478,16 @@ exports.deleteTransaction = asyncHandler(async (req, res, next) => {
 
   // Revert account balance
   if (transaction.cuentaID) {
-    const account = await Account.findById(transaction.cuentaID);
-    if (account) {
+    const activo = await Activo.findById(transaction.cuentaID);
+    if (activo && ['Cuenta Corriente', 'Cuenta Ahorro', 'Efectivo'].includes(activo.tipo)) {
       if (transaction.tipo === 'Ingreso') {
-        account.saldoDisponible -= transaction.monto;
+        activo.saldoDisponible = Math.max(0, (activo.saldoDisponible || 0) - transaction.monto);
+        activo.valor = activo.saldoDisponible;
       } else if (transaction.tipo === 'Gasto') {
-        account.saldoDisponible += transaction.monto;
+        activo.saldoDisponible = (activo.saldoDisponible || 0) + transaction.monto;
+        activo.valor = activo.saldoDisponible;
       }
-      await account.save();
+      await activo.save();
     }
   }
 

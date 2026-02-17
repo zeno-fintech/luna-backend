@@ -4,7 +4,7 @@ const User = require('@models/User');
 const Transaction = require('@models/Transaction');
 const Subscription = require('@models/Subscription');
 const Profile = require('@models/Profile');
-const Account = require('@models/Account');
+const Activo = require('@models/Activo'); // Reemplaza Account
 const MetricsSnapshot = require('@models/MetricsSnapshot');
 
 // Get global overview metrics (Nivel 1 - Holding)

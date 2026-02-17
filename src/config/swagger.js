@@ -5,9 +5,9 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'LUNA Backend API',
+      title: 'FinUp Backend API',
       version: '1.0.0',
-      description: 'API REST para LUNA - Plataforma de educación financiera con IA y Blockchain',
+      description: 'API REST para FinUp - Plataforma de finanzas personales para Latinoamérica',
       contact: {
         name: 'ZENO Financial Tech SPA',
         email: 'dev@zenofintech.com'
@@ -19,11 +19,11 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3001',
+        url: `http://localhost:${process.env.PORT || 3002}`,
         description: 'Servidor de desarrollo local'
       },
       {
-        url: 'https://tu-proyecto.railway.app',
+        url: 'https://luna-backend-production-ff08.up.railway.app',
         description: 'Servidor de producción (Railway)'
       }
     ],
@@ -78,16 +78,12 @@ const options = {
         description: 'Gestión de perfiles financieros'
       },
       {
-        name: 'Accounts',
-        description: 'Gestión de cuentas bancarias'
+        name: 'Patrimonio',
+        description: 'Gestión de Patrimonio (Activos y Pasivos unificados)'
       },
       {
         name: 'Transactions',
         description: 'Gestión de transacciones (ingresos/gastos)'
-      },
-      {
-        name: 'Debts',
-        description: 'Gestión de deudas'
       },
       {
         name: 'Payments',
@@ -108,14 +104,6 @@ const options = {
       {
         name: 'Rules',
         description: 'Gestión de reglas de presupuesto'
-      },
-      {
-        name: 'Assets',
-        description: 'Gestión de activos'
-      },
-      {
-        name: 'Savings',
-        description: 'Gestión de ahorros e inversiones'
       },
       {
         name: 'Budgets',
@@ -165,7 +153,7 @@ const swaggerSetup = (app) => {
   // Swagger UI
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
     customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'LUNA API Documentation',
+    customSiteTitle: 'FinUp Backend API Documentation',
     customfavIcon: '/favicon.ico'
   }));
 

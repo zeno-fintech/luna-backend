@@ -18,7 +18,7 @@ const transactionSchema = new mongoose.Schema({
   },
   cuentaID: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Account'
+    ref: 'Activo' // Actualizado: Account → Activo
   },
   categoriaID: {
     type: mongoose.Schema.Types.ObjectId,
@@ -35,7 +35,7 @@ const transactionSchema = new mongoose.Schema({
   },
   deudaID: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Debt'
+    ref: 'Pasivo' // Actualizado: Debt → Pasivo
   },
   esGastoFijo: {
     type: Boolean,

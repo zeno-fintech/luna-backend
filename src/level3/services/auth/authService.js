@@ -229,3 +229,15 @@ exports.getMe = async (userId) => {
     profiles
   };
 };
+
+/**
+ * Valida que un perfil pertenece al usuario autenticado
+ * 
+ * @param {string} userId - ID del usuario
+ * @param {string} profileId - ID del perfil
+ * @returns {Promise<boolean>} true si el perfil pertenece al usuario
+ */
+exports.validateProfileOwnership = async (userId, profileId) => {
+  const profile = await Profile.findOne({ _id: profileId, usuarioID: userId });
+  return profile !== null;
+};

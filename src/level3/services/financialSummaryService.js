@@ -1,69 +1,73 @@
-const Asset = require('@models/Asset');
-const Debt = require('@models/Debt');
-const Account = require('@models/Account');
+const Activo = require('@models/Activo');
+const Pasivo = require('@models/Pasivo');
 const Transaction = require('@models/Transaction');
-const Savings = require('@models/Savings');
 const Profile = require('@models/Profile');
 
 // Calculate net worth (patrimonio neto)
 exports.calculateNetWorth = async (profileId) => {
-  // Get all assets
-  const assets = await Asset.find({ perfilID: profileId });
-  const totalAssets = assets.reduce((sum, asset) => sum + (asset.valor || 0), 0);
+  // Get all activos (unified model: accounts, assets, savings)
+  const activos = await Activo.find({ perfilID: profileId });
+  const totalActivos = activos.reduce((sum, activo) => sum + (activo.valor || 0), 0);
 
-  // Get all debts (pasivos)
-  const debts = await Debt.find({ 
+  // Get all pasivos (unified model: debts)
+  const pasivos = await Pasivo.find({ 
     perfilID: profileId,
     estado: { $ne: 'Pagada' }
   });
-  const totalDebts = debts.reduce((sum, debt) => sum + (debt.saldoPendiente || 0), 0);
+  const totalPasivos = pasivos.reduce((sum, pasivo) => sum + (pasivo.saldoPendiente || 0), 0);
 
-  // Get account balances - Account is linked to perfilID (Profile)
-  const accounts = await Account.find({ 
-    perfilID: profileId
-  });
-  const totalCash = accounts.reduce((sum, account) => sum + (account.saldoDisponible || 0), 0);
+  // Calcular patrimonio neto
+  const patrimonioNeto = totalActivos - totalPasivos;
 
-  // Get savings/investments
-  const savings = await Savings.find({ perfilID: profileId });
-  const totalSavings = savings.reduce((sum, saving) => sum + (saving.monto || 0), 0);
+  // Desglose por categorías
+  const activosPorCategoria = activos.reduce((acc, a) => {
+    const cat = a.categoria || 'Otro';
+    acc[cat] = (acc[cat] || 0) + (a.valor || 0);
+    return acc;
+  }, {});
 
-  const netWorth = totalAssets + totalCash + totalSavings - totalDebts;
+  const activosLiquidos = activos
+    .filter(a => a.liquidez === 'Corriente')
+    .reduce((sum, a) => sum + (a.valor || 0), 0);
+
+  const activosNoLiquidos = activos
+    .filter(a => a.liquidez === 'No Corriente')
+    .reduce((sum, a) => sum + (a.valor || 0), 0);
 
   return {
-    assets: {
-      total: totalAssets,
-      breakdown: assets.map(a => ({
-        tipo: a.tipo,
-        valor: a.valor,
-        descripcion: a.descripcion
-      }))
-    },
-    cash: {
-      total: totalCash,
-      accounts: accounts.map(a => ({
+    activos: {
+      total: totalActivos,
+      cantidad: activos.length,
+      porCategoria: activosPorCategoria,
+      liquidos: activosLiquidos,
+      noLiquidos: activosNoLiquidos,
+      breakdown: activos.map(a => ({
+        id: a._id,
         nombre: a.nombre,
-        banco: a.banco,
-        saldo: a.saldoDisponible
+        tipo: a.tipo,
+        categoria: a.categoria,
+        liquidez: a.liquidez,
+        valor: a.valor,
+        moneda: a.moneda
       }))
     },
-    savings: {
-      total: totalSavings,
-      breakdown: savings.map(s => ({
-        tipo: s.tipo,
-        monto: s.monto
+    pasivos: {
+      total: totalPasivos,
+      cantidad: pasivos.length,
+      breakdown: pasivos.map(p => ({
+        id: p._id,
+        nombre: p.nombre,
+        prestador: p.prestador,
+        tipo: p.tipo,
+        categoria: p.categoria,
+        plazo: p.plazo,
+        saldoPendiente: p.saldoPendiente,
+        estado: p.estado,
+        moneda: p.moneda
       }))
     },
-    liabilities: {
-      total: totalDebts,
-      breakdown: debts.map(d => ({
-        prestador: d.prestador,
-        tipo: d.tipo,
-        saldoPendiente: d.saldoPendiente,
-        estado: d.estado
-      }))
-    },
-    netWorth
+    patrimonioNeto,
+    ratio: totalActivos > 0 ? (totalPasivos / totalActivos) * 100 : 0 // Ratio de endeudamiento
   };
 };
 
@@ -104,11 +108,11 @@ exports.calculateFinancialScore = async (profileId, userId) => {
   };
 
   // Factor 2: Debt-to-income ratio (0-25 points)
-  const debts = await Debt.find({ 
+  const pasivos = await Pasivo.find({ 
     perfilID: profileId,
     estado: { $ne: 'Pagada' }
   });
-  const totalDebt = debts.reduce((sum, d) => sum + (d.saldoPendiente || 0), 0);
+  const totalDebt = pasivos.reduce((sum, p) => sum + (p.saldoPendiente || 0), 0);
   const monthlyIncome = income / 1; // Assuming last 30 days = 1 month
   const debtToIncomeRatio = monthlyIncome > 0 ? (totalDebt / monthlyIncome) : 0;
   const debtScore = Math.max(0, 25 - (debtToIncomeRatio * 5)); // Lower is better
@@ -119,13 +123,13 @@ exports.calculateFinancialScore = async (profileId, userId) => {
     max: 25
   };
 
-  // Factor 3: Account diversity (0-15 points)
-  const accounts = await Account.find({ usuarioID: userId });
-  const accountDiversityScore = Math.min(15, accounts.length * 3); // 5+ accounts = 15 points
-  score += accountDiversityScore;
-  factors.accountDiversity = {
-    value: accounts.length,
-    score: accountDiversityScore.toFixed(2),
+  // Factor 3: Asset diversity (0-15 points)
+  const activos = await Activo.find({ perfilID: profileId });
+  const assetDiversityScore = Math.min(15, activos.length * 2); // 7+ activos = 15 points
+  score += assetDiversityScore;
+  factors.assetDiversity = {
+    value: activos.length,
+    score: assetDiversityScore.toFixed(2),
     max: 15
   };
 
@@ -142,8 +146,7 @@ exports.calculateFinancialScore = async (profileId, userId) => {
   };
 
   // Factor 5: Asset base (0-10 points)
-  const assets = await Asset.find({ perfilID: profileId });
-  const totalAssets = assets.reduce((sum, a) => sum + (a.valor || 0), 0);
+  const totalAssets = activos.reduce((sum, a) => sum + (a.valor || 0), 0);
   const assetScore = Math.min(10, Math.log10(totalAssets + 1) * 2); // Logarithmic scale
   score += assetScore;
   factors.assetBase = {
@@ -213,16 +216,19 @@ exports.getFinancialSummary = async (userId, profileId = null) => {
 
   const cashFlow = income - expenses;
 
-  // Get accounts summary - Account is linked to usuarioID (User)
-  const accounts = await Account.find({ usuarioID: userId });
-  const totalAccountBalance = accounts.reduce((sum, a) => sum + (a.saldoDisponible || 0), 0);
+  // Get activos summary (unified model)
+  const activos = await Activo.find({ perfilID: targetProfileId });
+  const totalActivos = activos.reduce((sum, a) => sum + (a.valor || 0), 0);
+  const activosLiquidos = activos
+    .filter(a => a.liquidez === 'Corriente')
+    .reduce((sum, a) => sum + (a.valor || 0), 0);
 
-  // Get debts summary
-  const debts = await Debt.find({ 
-    perfilID: { $in: profileIds },
+  // Get pasivos summary (unified model)
+  const pasivos = await Pasivo.find({ 
+    perfilID: targetProfileId,
     estado: { $ne: 'Pagada' }
   });
-  const totalDebt = debts.reduce((sum, d) => sum + (d.saldoPendiente || 0), 0);
+  const totalPasivos = pasivos.reduce((sum, p) => sum + (p.saldoPendiente || 0), 0);
 
   return {
     netWorth,
@@ -234,28 +240,36 @@ exports.getFinancialSummary = async (userId, profileId = null) => {
       net: cashFlow,
       transactions: transactions.length
     },
-    accounts: {
-      total: accounts.length,
-      totalBalance: totalAccountBalance,
-      accounts: accounts.map(a => ({
+    activos: {
+      total: activos.length,
+      totalValor: totalActivos,
+      totalLiquidos: activosLiquidos,
+      activos: activos.map(a => ({
         id: a._id,
         nombre: a.nombre,
+        tipo: a.tipo,
+        categoria: a.categoria,
+        liquidez: a.liquidez,
+        valor: a.valor,
+        moneda: a.moneda,
         banco: a.banco,
-        tipoCuenta: a.tipoCuenta,
-        saldo: a.saldoDisponible,
         favorito: a.favorito
       }))
     },
-    debts: {
-      total: debts.length,
-      totalAmount: totalDebt,
-      activeDebts: debts.filter(d => d.estado === 'Activa').length,
-      debts: debts.map(d => ({
-        id: d._id,
-        prestador: d.prestador,
-        tipo: d.tipo,
-        saldoPendiente: d.saldoPendiente,
-        estado: d.estado
+    pasivos: {
+      total: pasivos.length,
+      totalAmount: totalPasivos,
+      activePasivos: pasivos.filter(p => p.estado === 'Activa').length,
+      pasivos: pasivos.map(p => ({
+        id: p._id,
+        nombre: p.nombre,
+        prestador: p.prestador,
+        tipo: p.tipo,
+        categoria: p.categoria,
+        plazo: p.plazo,
+        saldoPendiente: p.saldoPendiente,
+        estado: p.estado,
+        moneda: p.moneda
       }))
     },
     profiles: profiles.map(p => ({
