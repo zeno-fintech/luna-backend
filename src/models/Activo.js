@@ -196,6 +196,10 @@ const activoSchema = new mongoose.Schema({
     type: Number,
     min: [0, 'El número de estacionamientos no puede ser negativo']
   },
+  numeroBodegas: {
+    type: Number,
+    min: [0, 'El número de bodegas no puede ser negativo']
+  },
   piso: {
     type: Number
   },

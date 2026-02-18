@@ -2,12 +2,12 @@
 	"info": {
 		"_postman_id": "luna-backend-api",
 		"name": "FinUp Backend API",
-		"description": "Colección completa de endpoints para FinUp Backend API - Plataforma de finanzas personales para Latinoamérica\n\n## ⚠️ CAMBIOS RECIENTES (16 Enero 2025):\n- ✅ Sistema de Patrimonio unificado (Activos y Pasivos)\n- ✅ Nuevos endpoints: /api/v1/patrimonio/activos y /api/v1/patrimonio/pasivos\n- ⚠️ Endpoints deprecados: /api/v1/accounts, /api/v1/debts, /api/v1/assets, /api/v1/savings\n- ✅ Puerto cambiado a 3002\n\n## 👤 Usuarios Creados:\n\n### SUPERADMIN (Nivel 1)\n- Email: dev.francoscm@gmail.com\n- Password: #Luna2025\n- Rol: SUPERADMIN\n- Tenant: Luna\n\n### Usuario Final (Nivel 3)\n- Email: francocastro204@gmail.com\n- Password: #Luna2025\n- Rol: USER\n- Tenant: Luna\n\n## 🏢 Tenant Creado:\n- Nombre: Luna\n- ID: 692be135e305e83804815fea\n- Slug: luna\n- Tipo: own_brand\n\n## 🚀 Instrucciones:\n1. Importa esta colección en Postman\n2. Configura la variable `base_url` como `http://localhost:3002`\n3. Ejecuta primero \"Login Usuario Final\" o \"Login SUPERADMIN\" para obtener tokens\n4. Los tokens se guardan automáticamente en las variables `auth_token` y `admin_token`\n5. Ya puedes probar todos los demás endpoints\n\n## 📚 Documentación:\n- Swagger UI: http://localhost:3002/api-docs\n- Changelog: docs/CHANGELOG-RECIENTE.md\n- Tareas Pendientes: docs/TAREAS-PENDIENTES.md",
+		"description": "Colección completa de endpoints para FinUp Backend API - Plataforma de finanzas personales para Latinoamérica\n\n## ⚠️ CAMBIOS RECIENTES (16 Enero 2025):\n- ✅ Sistema de Patrimonio unificado (Activos y Pasivos)\n- ✅ Nuevos endpoints: /api/v1/patrimonio/activos y /api/v1/patrimonio/pasivos\n- ⚠️ Endpoints deprecados: /api/v1/accounts, /api/v1/debts, /api/v1/assets, /api/v1/savings\n- ✅ Puerto cambiado a 3002\n\n## 👤 Usuarios Creados:\n\n### SUPERADMIN (Nivel 1)\n- Email: dev.francoscm@gmail.com\n- Password: #Luna2025\n- Rol: SUPERADMIN\n- Tenant: Luna\n\n### Usuario Final (Nivel 3)\n- Email: francocastro204@gmail.com\n- Password: #Luna2025\n- Rol: USER\n- Tenant: Luna\n\n## 🏢 Tenant Creado:\n- Nombre: Luna\n- ID: 692be135e305e83804815fea\n- Slug: luna\n- Tipo: own_brand\n\n## 📁 Organización Nivel 3:\n- **Nivel 3 - Patrimonio**: Activos (Activo), Pasivos (Pasivo) y Resumen. CRUD completo.\n- **Nivel 3 - Presupuestos** (Presupuesto), **Transacciones** (Transaction), **Ingresos** (Income), **Pagos** (Payment), **Reglas** (Rule), **Tasaciones de Activos** (AssetValuation).\n- Carpetas \"deprecado\": Cuentas (Account), Deudas (Debt), Activos legacy (Asset) → usar Patrimonio.\n\n## 🚀 Instrucciones:\n1. Importa esta colección en Postman\n2. Variable `base_url`: `http://localhost:3002` (ya por defecto)\n3. Ejecuta \"Login Usuario Final\" o \"Login SUPERADMIN\" para obtener tokens\n4. Los tokens se guardan en `auth_token` y `admin_token`\n5. Obtén `profile_id` con \"Get All Profiles\"; luego usa `activo_id` y `pasivo_id` desde Patrimonio\n\n## 📚 Documentación:\n- Swagger UI: http://localhost:3002/api-docs\n- Changelog: docs/CHANGELOG-RECIENTE.md\n- Tareas Pendientes: docs/TAREAS-PENDIENTES.md",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Health Check",
+			"name": "Salud y API",
 			"item": [
 				{
 					"name": "Health Check",
@@ -36,7 +36,8 @@
 			]
 		},
 		{
-			"name": "Level 3 - Auth (Usuario Final)",
+			"name": "Nivel 3 - Autenticación",
+			"description": "Login, registro y usuario actual (entidad: User).",
 			"item": [
 				{
 					"name": "Login Usuario Final",
@@ -244,7 +245,213 @@
 			]
 		},
 		{
-			"name": "Level 3 - Transactions",
+			"name": "Nivel 3 - Patrimonio",
+			"description": "Patrimonio unificado: Activos (entidad: Activo) y Pasivos (entidad: Pasivo). Reemplaza a accounts, assets, savings y debts.",
+			"item": [
+				{
+					"name": "Activos (Activo)",
+					"item": [
+						{
+							"name": "Listar activos",
+							"request": {
+								"method": "GET",
+								"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+								"url": {
+									"raw": "{{base_url}}/api/v1/patrimonio/activos?perfilID={{profile_id}}",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "patrimonio", "activos"],
+									"query": [
+										{"key": "perfilID", "value": "{{profile_id}}", "description": "ID del perfil (requerido)"},
+										{"key": "tipo", "value": "", "description": "Filtrar por tipo: Cuenta Corriente, Cuenta Ahorro, Efectivo, Casa Propia, Auto, etc.", "disabled": true},
+										{"key": "categoria", "value": "", "description": "Líquido, Inversión, Bien Raíz, Vehículo, Otro", "disabled": true},
+										{"key": "liquidez", "value": "", "description": "Corriente, No Corriente", "disabled": true},
+										{"key": "plazo", "value": "", "description": "Corto Plazo, Largo Plazo", "disabled": true}
+									]
+								},
+								"description": "Entidad: Activo. Obtiene todos los activos de un perfil."
+							}
+						},
+						{
+							"name": "Obtener activo por ID",
+							"request": {
+								"method": "GET",
+								"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+								"url": {
+									"raw": "{{base_url}}/api/v1/patrimonio/activos/{{activo_id}}",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "patrimonio", "activos", "{{activo_id}}"]
+								},
+								"description": "Entidad: Activo. Obtiene un activo por ID."
+							}
+						},
+						{
+							"name": "Crear activo (cuenta bancaria)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{auth_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"perfilID\": \"{{profile_id}}\",\n  \"nombre\": \"Cuenta Corriente Banco\",\n  \"tipo\": \"Cuenta Corriente\",\n  \"valor\": 1000000,\n  \"moneda\": \"CLP\",\n  \"banco\": \"Banco de Chile\",\n  \"saldoDisponible\": 1000000\n}"
+								},
+								"url": {"raw": "{{base_url}}/api/v1/patrimonio/activos", "host": ["{{base_url}}"], "path": ["api", "v1", "patrimonio", "activos"]},
+								"description": "Entidad: Activo. Crea un activo tipo cuenta bancaria."
+							}
+						},
+						{
+							"name": "Crear activo (propiedad)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{auth_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"perfilID\": \"{{profile_id}}\",\n  \"nombre\": \"Departamento Principal\",\n  \"tipo\": \"Departamento\",\n  \"valor\": 192400000,\n  \"moneda\": \"CLP\",\n  \"direccion\": \"AV AMERICA 755\",\n  \"comuna\": \"SAN BERNARDO\",\n  \"rol\": \"02524-00179\"\n}"
+								},
+								"url": {"raw": "{{base_url}}/api/v1/patrimonio/activos", "host": ["{{base_url}}"], "path": ["api", "v1", "patrimonio", "activos"]},
+								"description": "Entidad: Activo. Crea un activo tipo propiedad."
+							}
+						},
+						{
+							"name": "Actualizar activo",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{auth_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {"mode": "raw", "raw": "{\n  \"valor\": 1500000,\n  \"saldoDisponible\": 1500000\n}"},
+								"url": {"raw": "{{base_url}}/api/v1/patrimonio/activos/{{activo_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "patrimonio", "activos", "{{activo_id}}"]},
+								"description": "Entidad: Activo. Actualiza un activo."
+							}
+						},
+						{
+							"name": "Eliminar activo",
+							"request": {
+								"method": "DELETE",
+								"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+								"url": {"raw": "{{base_url}}/api/v1/patrimonio/activos/{{activo_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "patrimonio", "activos", "{{activo_id}}"]},
+								"description": "Entidad: Activo. Elimina un activo."
+							}
+						}
+					]
+				},
+				{
+					"name": "Pasivos (Pasivo)",
+					"item": [
+						{
+							"name": "Listar pasivos",
+							"request": {
+								"method": "GET",
+								"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+								"url": {
+									"raw": "{{base_url}}/api/v1/patrimonio/pasivos?perfilID={{profile_id}}",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "patrimonio", "pasivos"],
+									"query": [
+										{"key": "perfilID", "value": "{{profile_id}}", "description": "ID del perfil (requerido)"},
+										{"key": "tipo", "value": "", "description": "Personal, Institucional, Bancaria, Comercial", "disabled": true},
+										{"key": "categoria", "value": "", "description": "Hipotecario, Tarjeta de Crédito, Consumo, etc.", "disabled": true},
+										{"key": "plazo", "value": "", "description": "Corto Plazo, Largo Plazo", "disabled": true},
+										{"key": "estado", "value": "", "description": "Activa, Pagada, Vencida", "disabled": true}
+									]
+								},
+								"description": "Entidad: Pasivo. Obtiene todas las deudas del perfil."
+							}
+						},
+						{
+							"name": "Obtener pasivo por ID",
+							"request": {
+								"method": "GET",
+								"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+								"url": {"raw": "{{base_url}}/api/v1/patrimonio/pasivos/{{pasivo_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "patrimonio", "pasivos", "{{pasivo_id}}"]},
+								"description": "Entidad: Pasivo. Obtiene un pasivo por ID."
+							}
+						},
+						{
+							"name": "Crear pasivo (hipotecario)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{auth_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"perfilID\": \"{{profile_id}}\",\n  \"nombre\": \"Crédito Hipotecario\",\n  \"tipo\": \"Bancaria\",\n  \"categoria\": \"Hipotecario\",\n  \"prestador\": \"Santander Chile\",\n  \"montoTotal\": 117480402,\n  \"saldoPendiente\": 108518513,\n  \"numeroCuotas\": 300,\n  \"moneda\": \"UF\",\n  \"fechaInicio\": \"2022-04-26\",\n  \"fechaVencimiento\": \"2047-07-01\",\n  \"estado\": \"Activa\"\n}"
+								},
+								"url": {"raw": "{{base_url}}/api/v1/patrimonio/pasivos", "host": ["{{base_url}}"], "path": ["api", "v1", "patrimonio", "pasivos"]},
+								"description": "Entidad: Pasivo. Crea un pasivo (deuda). montoCuota se calcula automáticamente."
+							}
+						},
+						{
+							"name": "Crear pasivo (tarjeta de crédito)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{auth_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"perfilID\": \"{{profile_id}}\",\n  \"nombre\": \"Tarjeta Scotiabank\",\n  \"tipo\": \"Bancaria\",\n  \"categoria\": \"Tarjeta de Crédito\",\n  \"prestador\": \"Scotiabank\",\n  \"saldoPendiente\": 2000000,\n  \"abonoMensual\": 100000,\n  \"moneda\": \"CLP\",\n  \"estado\": \"Activa\"\n}"
+								},
+								"url": {"raw": "{{base_url}}/api/v1/patrimonio/pasivos", "host": ["{{base_url}}"], "path": ["api", "v1", "patrimonio", "pasivos"]},
+								"description": "Entidad: Pasivo. Crea pasivo con abono mensual (revolving)."
+							}
+						},
+						{
+							"name": "Actualizar pasivo",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{auth_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {"mode": "raw", "raw": "{\n  \"saldoPendiente\": 1000000,\n  \"saldoPagado\": 174802\n}"},
+								"url": {"raw": "{{base_url}}/api/v1/patrimonio/pasivos/{{pasivo_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "patrimonio", "pasivos", "{{pasivo_id}}"]},
+								"description": "Entidad: Pasivo. Actualiza un pasivo."
+							}
+						},
+						{
+							"name": "Eliminar pasivo",
+							"request": {
+								"method": "DELETE",
+								"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+								"url": {"raw": "{{base_url}}/api/v1/patrimonio/pasivos/{{pasivo_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "patrimonio", "pasivos", "{{pasivo_id}}"]},
+								"description": "Entidad: Pasivo. Elimina un pasivo."
+							}
+						}
+					]
+				},
+				{
+					"name": "Resumen de patrimonio",
+					"item": [
+						{
+							"name": "Obtener resumen de patrimonio",
+							"request": {
+								"method": "GET",
+								"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+								"url": {
+									"raw": "{{base_url}}/api/v1/patrimonio/resumen?perfilID={{profile_id}}",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "patrimonio", "resumen"],
+									"query": [{"key": "perfilID", "value": "{{profile_id}}", "description": "ID del perfil (requerido)"}]
+								},
+								"description": "Resumen: total activos, total pasivos, patrimonio neto y ratio de endeudamiento."
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Nivel 3 - Transacciones",
+			"description": "Transacciones (entidad: Transaction). Ingresos, gastos y transferencias.",
 			"item": [
 				{
 					"name": "Get All Transactions",
@@ -368,7 +575,8 @@
 			]
 		},
 		{
-			"name": "Level 3 - Profiles",
+			"name": "Nivel 3 - Perfiles",
+			"description": "Perfiles financieros (entidad: Profile).",
 			"item": [
 				{
 					"name": "Get All Profiles",
@@ -504,10 +712,11 @@
 			]
 		},
 		{
-			"name": "Level 3 - Accounts",
+			"name": "Nivel 3 - Cuentas (deprecado)",
+			"description": "⚠️ DEPRECADO. Entidad antigua: Account. Usar Nivel 3 - Patrimonio > Activos (Activo).",
 			"item": [
 				{
-					"name": "Get All Accounts",
+					"name": "Get All Accounts (deprecado)",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -519,16 +728,12 @@
 						"url": {
 							"raw": "{{base_url}}/api/v1/accounts?perfilID={{profile_id}}",
 							"host": ["{{base_url}}"],
-							"path": ["api", "v1", "accounts"],
-							"query": [
-								{
-									"key": "perfilID",
-									"value": "{{profile_id}}",
-									"description": "ID del perfil (requerido)"
-								}
-							]
-						},
-						"description": "Obtiene todas las cuentas de un perfil. Requiere perfilID en query."
+"path": ["api", "v1", "accounts"],
+									"query": [
+										{"key": "perfilID", "value": "{{profile_id}}", "description": "ID del perfil (requerido)"}
+									]
+								},
+								"description": "DEPRECADO. Entidad: Account. Usar GET /api/v1/patrimonio/activos?perfilID=xxx"
 					}
 				},
 				{
@@ -636,7 +841,8 @@
 			]
 		},
 		{
-			"name": "Level 3 - Analytics",
+			"name": "Nivel 3 - Analíticas",
+			"description": "Resúmenes y tendencias financieras.",
 			"item": [
 				{
 					"name": "Get Financial Summary",
@@ -675,7 +881,8 @@
 			]
 		},
 		{
-			"name": "Level 3 - App",
+			"name": "Nivel 3 - Resumen App",
+			"description": "Resumen general, patrimonio neto, score e insights (entidades: varios).",
 			"item": [
 				{
 					"name": "Get Summary",
@@ -1146,7 +1353,8 @@
 			]
 		},
 		{
-			"name": "Level 3 - Countries & Currencies (Públicos)",
+			"name": "Nivel 3 - Países y Monedas (públicos)",
+			"description": "Endpoints públicos. Entidades: Country, Currency.",
 			"item": [
 				{
 					"name": "Get Countries",
@@ -1223,10 +1431,11 @@
 			]
 		},
 		{
-			"name": "Level 3 - Assets",
+			"name": "Nivel 3 - Activos legacy (deprecado)",
+			"description": "⚠️ DEPRECADO. Entidad antigua: Asset. Usar Nivel 3 - Patrimonio > Activos (Activo).",
 			"item": [
 				{
-					"name": "Get All Assets",
+					"name": "Get All Assets (deprecado)",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -1323,7 +1532,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "{{asset_id}}"
+									"value": "{{activo_id}}"
 								}
 							]
 						}
@@ -1354,7 +1563,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "{{asset_id}}"
+									"value": "{{activo_id}}"
 								}
 							]
 						}
@@ -1377,7 +1586,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "{{asset_id}}"
+									"value": "{{activo_id}}"
 								}
 							]
 						}
@@ -1386,7 +1595,8 @@
 			]
 		},
 		{
-			"name": "Level 3 - Asset Valuations",
+			"name": "Nivel 3 - Tasaciones de Activos",
+			"description": "Historial de tasaciones (entidad: AssetValuation). Referencia: Activo (activoID). Ruta: /api/v1/assets/:activoID/valuations",
 			"item": [
 				{
 					"name": "Get Asset Valuations",
@@ -1405,11 +1615,11 @@
 							"variable": [
 								{
 									"key": "assetId",
-									"value": "{{asset_id}}"
+									"value": "{{activo_id}}"
 								}
 							]
 						},
-						"description": "Obtiene todas las tasaciones de un activo."
+						"description": "Entidad: AssetValuation. activoID referencia a Activo."
 					}
 				},
 				{
@@ -1429,7 +1639,7 @@
 							"variable": [
 								{
 									"key": "assetId",
-									"value": "{{asset_id}}"
+									"value": "{{activo_id}}"
 								}
 							]
 						},
@@ -1461,7 +1671,7 @@
 							"variable": [
 								{
 									"key": "assetId",
-									"value": "{{asset_id}}"
+									"value": "{{activo_id}}"
 								}
 							]
 						},
@@ -1493,7 +1703,7 @@
 							"variable": [
 								{
 									"key": "assetId",
-									"value": "{{asset_id}}"
+									"value": "{{activo_id}}"
 								}
 							]
 						},
@@ -1580,7 +1790,8 @@
 			]
 		},
 		{
-			"name": "Level 3 - Debts",
+			"name": "Nivel 3 - Deudas (deprecado)",
+			"description": "⚠️ DEPRECADO. Entidad antigua: Debt. Usar Nivel 3 - Patrimonio > Pasivos (Pasivo). Pagos siguen en Nivel 3 - Pagos (Payment, referencia Pasivo).",
 			"item": [
 				{
 					"name": "Get All Debts",
@@ -1837,7 +2048,8 @@
 			]
 		},
 		{
-			"name": "Level 3 - Payments",
+			"name": "Nivel 3 - Pagos",
+			"description": "Pagos de deudas (entidad: Payment). Referencia: Pasivo (deudaID), Transaction.",
 			"item": [
 				{
 					"name": "Get All Payments",
@@ -1976,7 +2188,8 @@
 			]
 		},
 		{
-			"name": "Level 3 - Financial Boards",
+			"name": "Nivel 3 - Tableros Financieros",
+			"description": "Tableros financieros mensuales (entidad: FinancialBoard). Alternativa moderna: Presupuestos (Presupuesto).",
 			"item": [
 				{
 					"name": "Get All Financial Boards",
@@ -2117,7 +2330,20 @@
 			]
 		},
 		{
-			"name": "Level 3 - Incomes",
+			"name": "Nivel 3 - Presupuestos",
+			"description": "Presupuestos mensuales (entidad: Presupuesto). Incluye reglas 50/30/20 y totalizador.",
+			"item": [
+				{"name": "Listar presupuestos", "request": {"method": "GET", "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}], "url": {"raw": "{{base_url}}/api/v1/presupuestos?perfilID={{profile_id}}&año=2025&mes=1", "host": ["{{base_url}}"], "path": ["api", "v1", "presupuestos"], "query": [{"key": "perfilID", "value": "{{profile_id}}"}, {"key": "año", "value": "2025"}, {"key": "mes", "value": "1"}]}, "description": "Entidad: Presupuesto."}},
+				{"name": "Obtener presupuesto por ID", "request": {"method": "GET", "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}], "url": {"raw": "{{base_url}}/api/v1/presupuestos/{{presupuesto_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "presupuestos", "{{presupuesto_id}}"]}, "description": "Entidad: Presupuesto."}},
+				{"name": "Crear presupuesto", "request": {"method": "POST", "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}, {"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"perfilID\": \"{{profile_id}}\",\n  \"nombre\": \"Presupuesto Enero 2025\",\n  \"año\": 2025,\n  \"mes\": 1,\n  \"moneda\": \"CLP\"\n}"}, "url": {"raw": "{{base_url}}/api/v1/presupuestos", "host": ["{{base_url}}"], "path": ["api", "v1", "presupuestos"]}, "description": "Entidad: Presupuesto. Crea reglas 50/30/20 automáticamente."}},
+				{"name": "Actualizar presupuesto", "request": {"method": "PUT", "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}, {"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"nombre\": \"Presupuesto Actualizado\"\n}"}, "url": {"raw": "{{base_url}}/api/v1/presupuestos/{{presupuesto_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "presupuestos", "{{presupuesto_id}}"]}, "description": "Entidad: Presupuesto."}},
+				{"name": "Eliminar presupuesto", "request": {"method": "DELETE", "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}], "url": {"raw": "{{base_url}}/api/v1/presupuestos/{{presupuesto_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "presupuestos", "{{presupuesto_id}}"]}, "description": "Entidad: Presupuesto."}},
+				{"name": "Totalizador presupuestos", "request": {"method": "GET", "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}], "url": {"raw": "{{base_url}}/api/v1/presupuestos/totalizador?perfilID={{profile_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "presupuestos", "totalizador"], "query": [{"key": "perfilID", "value": "{{profile_id}}"}]}, "description": "Resumen totalizador."}}
+			]
+		},
+		{
+			"name": "Nivel 3 - Ingresos",
+			"description": "Ingresos (entidad: Income). Asociables a Presupuesto.",
 			"item": [
 				{
 					"name": "Get All Incomes",
@@ -2260,7 +2486,8 @@
 			]
 		},
 		{
-			"name": "Level 3 - Rules",
+			"name": "Nivel 3 - Reglas",
+			"description": "Reglas de presupuesto 50/30/20 (entidad: Rule). Asociadas a Presupuesto.",
 			"item": [
 				{
 					"name": "Get All Rules",
@@ -2397,7 +2624,7 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "http://localhost:3001",
+			"value": "http://localhost:3002",
 			"type": "string"
 		},
 		{
@@ -2454,6 +2681,24 @@
 			"key": "profile_id",
 			"value": "",
 			"type": "string"
+		},
+		{
+			"key": "activo_id",
+			"value": "",
+			"type": "string",
+			"description": "ID de un activo (entidad: Activo)"
+		},
+		{
+			"key": "pasivo_id",
+			"value": "",
+			"type": "string",
+			"description": "ID de un pasivo/deuda (entidad: Pasivo)"
+		},
+		{
+			"key": "presupuesto_id",
+			"value": "",
+			"type": "string",
+			"description": "ID de un presupuesto (entidad: Presupuesto)"
 		},
 		{
 			"key": "account_id",
